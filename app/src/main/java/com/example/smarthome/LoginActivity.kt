@@ -20,7 +20,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var tvForgotPassword: TextView
     private lateinit var tvRegister: TextView
 
-
     private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +39,10 @@ class LoginActivity : AppCompatActivity() {
         btnShowPassword = findViewById(R.id.btnShowPassword)
         tvForgotPassword = findViewById(R.id.tvForgotPassword)
         tvRegister = findViewById(R.id.tvRegister)
-
     }
 
     private fun setupClickListeners() {
+
         btnSignIn.setOnClickListener {
             validateLogin()
         }
@@ -61,42 +60,29 @@ class LoginActivity : AppCompatActivity() {
         }
 
         tvRegister.setOnClickListener {
-            Toast.makeText(
-                this,
-                "Registration screen will be created next",
-                Toast.LENGTH_SHORT
-            ).show()
-
-            /*
-            After creating RegisterActivity, replace the Toast with:
-
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
-            */
         }
-
-
-
     }
 
     private fun togglePasswordVisibility() {
         isPasswordVisible = !isPasswordVisible
 
-        if (isPasswordVisible) {
-            etPassword.inputType =
-                InputType.TYPE_CLASS_TEXT or
-                        InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-
-            btnShowPassword.contentDescription = "Hide password"
+        etPassword.inputType = if (isPasswordVisible) {
+            InputType.TYPE_CLASS_TEXT or
+                    InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
         } else {
-            etPassword.inputType =
-                InputType.TYPE_CLASS_TEXT or
-                        InputType.TYPE_TEXT_VARIATION_PASSWORD
-
-            btnShowPassword.contentDescription = "Show password"
+            InputType.TYPE_CLASS_TEXT or
+                    InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
 
-        // Keep the cursor at the end of the password
+        btnShowPassword.contentDescription =
+            if (isPasswordVisible) {
+                "Hide password"
+            } else {
+                "Show password"
+            }
+
         etPassword.setSelection(etPassword.text.length)
     }
 
@@ -124,7 +110,8 @@ class LoginActivity : AppCompatActivity() {
             }
 
             password.length < 6 -> {
-                etPassword.error = "Password must contain at least 6 characters"
+                etPassword.error =
+                    "Password must contain at least 6 characters"
                 etPassword.requestFocus()
             }
 
