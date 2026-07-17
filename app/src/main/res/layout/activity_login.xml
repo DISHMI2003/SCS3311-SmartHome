@@ -187,7 +187,7 @@
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSignIn"
                 android:layout_width="match_parent"
                 android:layout_height="58dp"
@@ -197,7 +197,7 @@
                 android:elevation="8dp"
                 android:text="Sign In"
                 android:textAllCaps="false"
-                android:textColor="#10213D"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 

@@ -71,7 +71,7 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/register_input_background"
-                android:hint="John Doe"
+                android:hint="ABC Pawani"
                 android:importantForAutofill="yes"
                 android:inputType="textPersonName"
                 android:paddingStart="16dp"
@@ -220,7 +220,8 @@
 
             <!-- Create account -->
 
-            <Button
+
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnCreateAccount"
                 android:layout_width="match_parent"
                 android:layout_height="58dp"
@@ -230,7 +231,7 @@
                 android:elevation="8dp"
                 android:text="Create Account  →"
                 android:textAllCaps="false"
-                android:textColor="#10304A"
+                android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -265,40 +266,9 @@
 
         </LinearLayout>
 
-        <!-- Footer buttons -->
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnHelp"
-                android:layout_width="120dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/register_footer_button_background"
-                android:backgroundTint="@null"
-                android:text="Help"
-                android:textAllCaps="false"
-                android:textColor="#B6C1D4"
-                android:textSize="13sp" />
 
-            <Button
-                android:id="@+id/btnLanguage"
-                android:layout_width="120dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/register_footer_button_background"
-                android:backgroundTint="@null"
-                android:text="Language"
-                android:textAllCaps="false"
-                android:textColor="#B6C1D4"
-                android:textSize="13sp" />
-
-        </LinearLayout>
 
     </LinearLayout>
 

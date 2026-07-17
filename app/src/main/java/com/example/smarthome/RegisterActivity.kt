@@ -22,8 +22,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var btnShowPassword: ImageButton
     private lateinit var btnShowConfirmPassword: ImageButton
     private lateinit var btnCreateAccount: Button
-    private lateinit var btnHelp: Button
-    private lateinit var btnLanguage: Button
+
 
     private lateinit var cbTerms: CheckBox
     private lateinit var tvBackToLogin: TextView
@@ -50,8 +49,7 @@ class RegisterActivity : AppCompatActivity() {
         btnShowPassword = findViewById(R.id.btnShowRegisterPassword)
         btnShowConfirmPassword = findViewById(R.id.btnShowConfirmPassword)
         btnCreateAccount = findViewById(R.id.btnCreateAccount)
-        btnHelp = findViewById(R.id.btnHelp)
-        btnLanguage = findViewById(R.id.btnLanguage)
+
 
         cbTerms = findViewById(R.id.cbTerms)
         tvBackToLogin = findViewById(R.id.tvBackToLogin)
@@ -74,21 +72,7 @@ class RegisterActivity : AppCompatActivity() {
             openLoginScreen()
         }
 
-        btnHelp.setOnClickListener {
-            Toast.makeText(
-                this,
-                "Help information will be added later",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
 
-        btnLanguage.setOnClickListener {
-            Toast.makeText(
-                this,
-                "Language selection will be added later",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
     }
 
     private fun togglePasswordVisibility() {
