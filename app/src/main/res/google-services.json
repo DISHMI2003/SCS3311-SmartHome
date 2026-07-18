@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "83836093540",
+    "project_id": "smarthome-scs3311-teampds",
+    "storage_bucket": "smarthome-scs3311-teampds.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83836093540:android:1f687049325c426bbecb71",
+        "android_client_info": {
+          "package_name": "com.example.smarthome"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgZtSqcqit47FB7ja2osmjn05JvuA7ZLc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

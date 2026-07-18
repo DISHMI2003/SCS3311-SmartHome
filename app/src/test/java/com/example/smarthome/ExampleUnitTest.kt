@@ -1,5 +1,4 @@
 package com.example.smarthome
-
 import org.junit.Test
 
 import org.junit.Assert.*
