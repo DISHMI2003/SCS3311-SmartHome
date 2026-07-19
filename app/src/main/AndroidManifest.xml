@@ -11,6 +11,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartHome">
         <activity
+            android:name=".FirstFloorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GroundFloorActivity"
+            android:exported="false" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
