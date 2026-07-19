@@ -1,13 +1,19 @@
 package com.example.smarthome.repository
 
-import android.util.Log
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.smarthome.firebase.FirebaseManager
+import com.example.smarthome.model.Floor
 
 class FirebaseRepository {
 
-    private val db = FirebaseFirestore.getInstance()
+    private val db = FirebaseManager.db
 
-    fun getFloors() {
+    fun getFloors(
+
+        onSuccess: (List<Floor>) -> Unit,
+
+        onFailure: (Exception) -> Unit
+
+    ) {
 
         db.collection("houses")
             .document("house1")
@@ -15,16 +21,32 @@ class FirebaseRepository {
             .get()
             .addOnSuccessListener { documents ->
 
-                Log.d("FirestoreTest", "Floors retrieved successfully")
+                val floorList = mutableListOf<Floor>()
 
                 for (document in documents) {
-                    Log.d("FirestoreTest", "Floor ID: ${document.id}")
-                    Log.d("FirestoreTest", "Floor Name: ${document.getString("name")}")
+
+                    val floor = Floor(
+
+                        id = document.id,
+
+                        name = document.getString("name") ?: ""
+
+                    )
+
+                    floorList.add(floor)
+
                 }
 
+                onSuccess(floorList)
+
             }
-            .addOnFailureListener { exception ->
-                Log.e("FirestoreTest", "Error reading floors", exception)
+
+            .addOnFailureListener {
+
+                onFailure(it)
+
             }
+
     }
+
 }
