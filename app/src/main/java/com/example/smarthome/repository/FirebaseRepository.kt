@@ -1,29 +1,41 @@
 package com.example.smarthome.repository
 
+import android.util.Log
 import com.example.smarthome.firebase.FirebaseManager
 import com.example.smarthome.model.Floor
+import com.google.firebase.firestore.ListenerRegistration
 
 class FirebaseRepository {
 
     private val db = FirebaseManager.db
 
-    fun getFloors(
+    private var floorListener: ListenerRegistration? = null
 
-        onSuccess: (List<Floor>) -> Unit,
+    fun listenToFloors(
 
-        onFailure: (Exception) -> Unit
+        onUpdate: (List<Floor>) -> Unit,
+
+        onError: (Exception) -> Unit
 
     ) {
 
-        db.collection("houses")
+        floorListener = db.collection("houses")
             .document("house1")
             .collection("floors")
-            .get()
-            .addOnSuccessListener { documents ->
+            .addSnapshotListener { snapshot, error ->
+
+                if (error != null) {
+
+                    onError(error)
+                    return@addSnapshotListener
+
+                }
+
+                if (snapshot == null) return@addSnapshotListener
 
                 val floorList = mutableListOf<Floor>()
 
-                for (document in documents) {
+                for (document in snapshot.documents) {
 
                     val floor = Floor(
 
@@ -37,15 +49,15 @@ class FirebaseRepository {
 
                 }
 
-                onSuccess(floorList)
+                onUpdate(floorList)
 
             }
 
-            .addOnFailureListener {
+    }
 
-                onFailure(it)
+    fun removeListeners() {
 
-            }
+        floorListener?.remove()
 
     }
 

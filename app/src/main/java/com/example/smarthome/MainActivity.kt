@@ -10,7 +10,10 @@ import com.example.smarthome.repository.FirebaseRepository
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var repository: FirebaseRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
@@ -29,36 +32,48 @@ class MainActivity : AppCompatActivity() {
             )
 
             insets
+
         }
 
-        val repository = FirebaseRepository()
+        repository = FirebaseRepository()
 
-        repository.getFloors(
+        repository.listenToFloors(
 
-            onSuccess = { floors ->
+            onUpdate = { floors ->
 
-                Log.d("Firestore", "Total Floors : ${floors.size}")
+                Log.d("Realtime", "Firestore Updated")
+
+                Log.d("Realtime", "Total Floors : ${floors.size}")
 
                 floors.forEach { floor ->
 
-                    Log.d("Firestore", "ID   : ${floor.id}")
-                    Log.d("Firestore", "Name : ${floor.name}")
+                    Log.d("Realtime", "ID   : ${floor.id}")
+
+                    Log.d("Realtime", "Name : ${floor.name}")
 
                 }
 
             },
 
-            onFailure = { exception ->
+            onError = { exception ->
 
                 Log.e(
-                    "Firestore",
-                    "Error retrieving floors",
+                    "Realtime",
+                    "Firestore Error",
                     exception
                 )
 
             }
 
         )
+
+    }
+
+    override fun onDestroy() {
+
+        super.onDestroy()
+
+        repository.removeListeners()
 
     }
 
