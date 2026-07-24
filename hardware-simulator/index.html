@@ -227,18 +227,33 @@ OFF
                     </h4>
 
 
-
-                    <span class="status off" id="securityCameraStatus">
-
-                        OFF
-
-                    </span>
-
+<span class="status on" id="securityCameraStatus">
+ONLINE
+</span>
 
 
                     <img src="https://placehold.co/300x180?text=Security+Camera" class="camera-image">
 
+<div>
+    <button onclick="updateDevice(
+'securityCamera',
+'securityCameraStatus',
+'ONLINE'
+)">
+ONLINE
+</button>
 
+
+
+
+<button onclick="updateDevice(
+'securityCamera',
+'securityCameraStatus',
+'DISCONNECTED'
+)">
+OFFLINE
+</button>
+</div>
 
                 </div>
 
@@ -483,7 +498,29 @@ houses
 
 
                     <img src="https://placehold.co/250x150?text=Garage+Camera" class="camera-image">
+    <div class="buttons">
 
+        <button onclick="updateDevice(
+        'garageCamera',
+        'garageCameraStatus',
+        'ONLINE'
+        )">
+            ONLINE
+        </button>
+
+
+        <button class="off-btn"
+        onclick="updateDevice(
+        'garageCamera',
+        'garageCameraStatus',
+        'DISCONNECTED'
+        )">
+            OFFLINE
+        </button>
+
+    </div>
+
+</div>
 
                 </div>
 
