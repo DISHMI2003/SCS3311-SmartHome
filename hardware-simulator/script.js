@@ -1,393 +1,715 @@
-// ==========================================
+// ==================================================
 // Smart Home Hardware Simulator
-// script.js
-// ==========================================
+// Firebase Firestore Connected Version
+// ==================================================
+
+// ===============================
+// Local UI Status Update
+// ===============================
+
+window.updateStatus = function(id, status){
+
+    const element = document.getElementById(id);
+
+    if(!element){
+        console.log("Element not found:", id);
+        return;
+    }
 
 
-// Wait until HTML page loads completely
+    element.innerHTML = status;
+
+
+    element.classList.remove(
+        "on",
+        "off",
+        "error",
+        "disconnected"
+    );
+
+
+    if(status === "ON"){
+        element.classList.add("on");
+    }
+
+    else if(status === "OFF"){
+        element.classList.add("off");
+    }
+
+    else if(status === "ERROR"){
+        element.classList.add("error");
+    }
+
+    else if(status === "DISCONNECTED"){
+        element.classList.add("disconnected");
+    }
+
+
+    console.log(id,"changed to",status);
+
+};
+
+// Wait until page loads
 
 document.addEventListener("DOMContentLoaded", () => {
 
 
-    // ======================================
-    // Device Status Update
-    // ======================================
+console.log(
+    "Smart Home Simulator Started"
+);
 
 
-    window.updateStatus = function(id, status) {
 
+// ==================================================
+// Device Mapping
+// HTML ID  -> Firestore Device ID
+// ==================================================
 
-        const device =
-            document.getElementById(id);
 
+const devices = {
 
-        if(!device){
-            return;
-        }
 
+    livingLightStatus:
+    "livingRoomLight",
 
-        // Change text
 
-        device.innerHTML = status;
+    tvOutletStatus:
+    "tvOutlet",
 
 
+    kitchenLightStatus:
+    "kitchenLight",
 
-        // Remove previous status colors
 
-        device.classList.remove(
-            "on",
-            "off",
-            "error",
-            "disconnected"
-        );
+    ironStatus:
+    "kitchenIron",
 
 
+    garageLightStatus:
+    "garageLight",
 
-        // Add new status color
 
-        switch(status){
+    masterBedroomLightStatus:
+    "masterBedroomLight",
 
 
-            case "ON":
+    bedroomLightStatus:
+    "bedroomLight",
 
-                device.classList.add("on");
 
-                break;
+    bedroomOutletStatus:
+    "bedroomOutlet",
 
 
+    bathroomLightStatus:
+    "bathroomLight"
 
-            case "OFF":
 
-                device.classList.add("off");
+};
 
-                break;
 
 
 
-            case "ERROR":
 
-                device.classList.add("error");
+// ==================================================
+// Update Device UI
+// ==================================================
 
-                break;
 
+function changeUI(
+    elementID,
+    status
+)
+{
 
 
-            case "DISCONNECTED":
+const element =
+document.getElementById(elementID);
 
-                device.classList.add("disconnected");
 
-                break;
 
-        }
+if(!element)
+return;
 
 
 
-        console.log(
-            id + " changed to " + status
-        );
+element.innerHTML =
+status;
 
 
-        // Future Firebase update
 
-        /*
-        updateFirebaseDevice(
-            id,
-            status
-        );
-        */
+element.classList.remove(
+    "on",
+    "off",
+    "error",
+    "disconnected"
+);
 
-    };
 
 
+switch(status)
+{
 
 
+case "ON":
 
-    // ======================================
-    // Iron Safety Function
-    // ======================================
+element.classList.add(
+"on"
+);
 
+break;
 
-    window.ironControl = function(status){
 
 
+case "OFF":
 
-        updateStatus(
-            "ironStatus",
-            status
-        );
+element.classList.add(
+"off"
+);
 
+break;
 
 
-        if(status === "ON"){
 
+case "ERROR":
 
-            console.log(
-                "Iron timer started"
-            );
+element.classList.add(
+"error"
+);
 
+break;
 
 
-            setTimeout(()=>{
 
+case "DISCONNECTED":
 
-                updateStatus(
-                    "ironStatus",
-                    "OFF"
-                );
+element.classList.add(
+"disconnected"
+);
 
+break;
 
 
-                alert(
-                    "⚠️ Safety Alert\n\nIron automatically turned OFF after 2 minutes."
-                );
 
+}
 
 
-                console.log(
-                    "Iron auto OFF"
-                );
 
+}
 
 
-                // Future Firebase notification
 
-                /*
-                sendNotification(
-                   "Iron turned OFF automatically"
-                );
-                */
 
 
-            },120000);
+// ==================================================
+// Update Firestore Device Status
+// ==================================================
 
 
+window.updateDevice =
+async function(
+deviceID,
+htmlID,
+status
+)
+{
 
-        }
 
+try{
 
 
-    };
+/*
 
+Firestore Path:
 
+houses
+ |
+ house1
+ |
+ floors
+ |
+ floor
+ |
+ rooms
+ |
+ room
+ |
+ devices
+ |
+ deviceID
 
+*/
 
 
-    // ======================================
-    // Multi Switch Panel
-    // ======================================
+let deviceRef;
 
 
-    const switches = [
 
-        "switch1",
-        "switch2",
-        "switch3"
+// ------------------------------
+// Find Device Path
+// ------------------------------
 
-    ];
 
+const paths = {
 
 
-    switches.forEach((switchId)=>{
+livingRoomLight:
+[
+"groundFloor",
+"livingRoom"
+],
 
 
-        const toggle =
-            document.getElementById(switchId);
+tvOutlet:
+[
+"groundFloor",
+"livingRoom"
+],
 
 
+securityCamera:
+[
+"groundFloor",
+"livingRoom"
+],
 
-        if(toggle){
 
+kitchenLight:
+[
+"groundFloor",
+"kitchen"
+],
 
-            toggle.addEventListener(
-                "change",
-                ()=>{
 
+kitchenIron:
+[
+"groundFloor",
+"kitchen"
+],
 
-                    let status =
-                    toggle.checked
-                    ? "ON"
-                    : "OFF";
 
+garageLight:
+[
+"groundFloor",
+"garage"
+],
 
 
-                    console.log(
-                        switchId +
-                        " : " +
-                        status
-                    );
+garageCamera:
+[
+"groundFloor",
+"garage"
+],
 
 
+masterBedroomLight:
+[
+"firstFloor",
+"masterBedroom"
+],
 
-                    /*
-                    Future Firebase:
 
-                    updateSwitch(
-                       switchId,
-                       status
-                    );
+switchPanel1:
+[
+"firstFloor",
+"masterBedroom"
+],
 
-                    */
 
+bedroomLight:
+[
+"firstFloor",
+"bedroom"
+],
 
-                }
-            );
 
+bedroomOutlet:
+[
+"firstFloor",
+"bedroom"
+],
 
-        }
 
+bathroomLight:
+[
+"firstFloor",
+"bathroom"
+]
 
-    });
 
+};
 
 
 
 
 
-    // ======================================
-    // Camera Control
-    // ======================================
+const location =
+paths[deviceID];
 
 
 
-    window.cameraOnline=function(id){
+if(!location)
+{
 
+console.log(
+"Device path not found"
+);
 
-        const camera =
-        document.getElementById(id);
+return;
 
+}
 
 
-        if(!camera)
-            return;
 
 
+const floor =
+location[0];
 
-        camera.innerHTML="ONLINE";
 
+const room =
+location[1];
 
 
-        camera.classList.remove(
-            "off",
-            "disconnected"
-        );
 
 
+deviceRef =
+firebase.firestore()
 
-        camera.classList.add(
-            "on"
-        );
+.collection("houses")
 
+.doc("house1")
 
-    };
+.collection("floors")
 
+.doc(floor)
 
+.collection("rooms")
 
+.doc(room)
 
+.collection("devices")
 
-    window.cameraOffline=function(id){
+.doc(deviceID);
 
 
 
-        const camera =
-        document.getElementById(id);
 
 
 
-        if(!camera)
-            return;
 
+// Update Firebase
 
 
-        camera.innerHTML=
-        "DISCONNECTED";
+await deviceRef.update({
 
+status:status
 
+});
 
-        camera.classList.remove(
-            "on",
-            "off"
-        );
 
 
 
-        camera.classList.add(
-            "disconnected"
-        );
 
+// Update UI
 
-    };
 
+changeUI(
+htmlID,
+status
+);
 
 
 
+console.log(
+deviceID +
+" changed to "
++
+status
+);
 
-    // ======================================
-    // Initial Device States
-    // ======================================
 
 
+}
 
-    const devices=[
+catch(error)
+{
 
+console.error(
+"Firebase Update Error",
+error
+);
 
-        "livingLightStatus",
 
-        "tvOutletStatus",
+}
 
-        "kitchenLightStatus",
 
-        "ironStatus",
 
-        "garageLightStatus",
+};
 
-        "masterLightStatus",
 
-        "bedroomLightStatus",
 
-        "bedroomOutletStatus",
 
-        "bathroomLightStatus"
 
 
-    ];
 
+// ==================================================
+// Read All Device Status
+// ==================================================
 
 
+async function loadDevices()
+{
 
-    devices.forEach((device)=>{
 
+for(
+const htmlID in devices
+)
+{
 
-        const element =
-        document.getElementById(device);
 
+const deviceID =
+devices[htmlID];
 
 
-        if(element){
 
+try{
 
-            element.classList.remove(
-                "on",
-                "error",
-                "disconnected"
-            );
 
+let path;
 
-            element.classList.add(
-                "off"
-            );
 
 
-        }
+const locations = {
 
 
-    });
+livingRoomLight:
+["groundFloor","livingRoom"],
 
 
+tvOutlet:
+["groundFloor","livingRoom"],
 
 
-    console.log(
-        "Smart Home Simulator Loaded Successfully"
-    );
+kitchenLight:
+["groundFloor","kitchen"],
+
+
+kitchenIron:
+["groundFloor","kitchen"],
+
+
+garageLight:
+["groundFloor","garage"],
+
+
+masterBedroomLight:
+["firstFloor","masterBedroom"],
+
+
+bedroomLight:
+["firstFloor","bedroom"],
+
+
+bedroomOutlet:
+["firstFloor","bedroom"],
+
+
+bathroomLight:
+["firstFloor","bathroom"]
+
+
+};
+
+
+
+path =
+locations[deviceID];
+
+
+
+if(!path)
+continue;
+
+
+
+const snapshot =
+await firebase.firestore()
+
+.collection("houses")
+
+.doc("house1")
+
+.collection("floors")
+
+.doc(path[0])
+
+.collection("rooms")
+
+.doc(path[1])
+
+.collection("devices")
+
+.doc(deviceID)
+
+.get();
+
+
+
+
+
+if(snapshot.exists)
+{
+
+
+const data =
+snapshot.data();
+
+
+
+changeUI(
+htmlID,
+data.status
+);
+
+
+
+}
+
+
+
+}
+
+catch(error)
+{
+
+
+console.log(
+error
+);
+
+
+}
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+// ==================================================
+// Iron Safety Feature
+// ==================================================
+
+
+window.ironControl =
+function(status)
+{
+
+
+updateDevice(
+"kitchenIron",
+"ironStatus",
+status
+);
+
+
+
+if(status==="ON")
+{
+
+
+setTimeout(()=>{
+
+
+updateDevice(
+"kitchenIron",
+"ironStatus",
+"OFF"
+);
+
+
+
+alert(
+"⚠️ Kitchen Iron automatically turned OFF after 2 minutes"
+);
+
+
+
+},120000);
+
+
+
+}
+
+
+};
+
+
+
+
+
+
+
+// ==================================================
+// Multi Switch Update
+// ==================================================
+
+
+window.updateSwitch =
+function(
+deviceID,
+switchName,
+value
+)
+{
+
+
+console.log(
+
+deviceID +
+" "
++
+switchName
++
+" = "
++
+value
+
+);
+
+
+
+/*
+
+Later connect:
+
+switchPanel1
+|
+sub fields
+
+*/
+
+
+};
+
+
+
+
+
+
+
+
+// Load Firebase data
+
+loadDevices();
+
+
 
 
 
