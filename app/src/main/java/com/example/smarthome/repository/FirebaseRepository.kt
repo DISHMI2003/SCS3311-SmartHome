@@ -13,12 +13,12 @@ class FirebaseRepository {
     private var roomListener: ListenerRegistration? = null
     private var deviceListener: ListenerRegistration? = null
 
+
+    // FLOORS
+
     fun listenToFloors(
-
         onUpdate: (List<Floor>) -> Unit,
-
         onError: (Exception) -> Unit
-
     ) {
 
         floorListener = db.collection("houses")
@@ -31,21 +31,21 @@ class FirebaseRepository {
                     return@addSnapshotListener
                 }
 
-                if (snapshot == null) return@addSnapshotListener
+                if (snapshot == null) {
+                    onUpdate(emptyList())
+                    return@addSnapshotListener
+                }
 
                 val floors = mutableListOf<Floor>()
 
                 for (document in snapshot.documents) {
 
                     floors.add(
-
                         Floor(
                             id = document.id,
                             name = document.getString("name") ?: ""
                         )
-
                     )
-
                 }
 
                 onUpdate(floors)
@@ -54,14 +54,13 @@ class FirebaseRepository {
 
     }
 
+
+    //  ROOMS
+
     fun listenToRooms(
-
         floorId: String,
-
         onUpdate: (List<String>) -> Unit,
-
         onError: (Exception) -> Unit
-
     ) {
 
         roomListener = db.collection("houses")
@@ -76,14 +75,15 @@ class FirebaseRepository {
                     return@addSnapshotListener
                 }
 
-                if (snapshot == null) return@addSnapshotListener
+                if (snapshot == null) {
+                    onUpdate(emptyList())
+                    return@addSnapshotListener
+                }
 
                 val rooms = mutableListOf<String>()
 
                 for (document in snapshot.documents) {
-
                     rooms.add(document.id)
-
                 }
 
                 onUpdate(rooms)
@@ -92,13 +92,14 @@ class FirebaseRepository {
 
     }
 
-    fun listenToDevices(
 
+    // DEVICES
+
+    fun listenToDevices(
         floorId: String,
         roomId: String,
         onUpdate: (List<Device>) -> Unit,
         onError: (Exception) -> Unit
-
     ) {
 
         deviceListener = db.collection("houses")
@@ -115,33 +116,34 @@ class FirebaseRepository {
                     return@addSnapshotListener
                 }
 
-                if (snapshot == null) return@addSnapshotListener
+                if (snapshot == null) {
+                    onUpdate(emptyList())
+                    return@addSnapshotListener
+                }
 
                 val devices = mutableListOf<Device>()
 
                 for (document in snapshot.documents) {
 
-                    devices.add(
+                    val device = Device(
 
-                        Device(
+                        id = document.id,
 
-                            id = document.id,
+                        name = document.getString("name") ?: "",
 
-                            name = document.getString("name") ?: "",
+                        room = roomId,
 
-                            room = roomId,
+                        type = document.getString("type") ?: "",
 
-                            status = document.getString("status") ?: "OFF",
+                        status = document.getString("status") ?: "OFF",
 
-                            type = document.getString("type") ?: "",
+                        maxOnDuration = document.getLong("maxOnDuration") ?: 0,
 
-                            maxOnDuration = document.getLong("maxOnDuration") ?: 0,
-
-                            autoOff = document.getBoolean("autoOff") ?: false
-
-                        )
+                        autoOff = document.getBoolean("autoOff") ?: false
 
                     )
+
+                    devices.add(device)
 
                 }
 
@@ -151,13 +153,14 @@ class FirebaseRepository {
 
     }
 
-    fun updateDeviceStatus(
 
+    // UPDATE DEVICE
+
+    fun updateDeviceStatus(
         floorId: String,
         roomId: String,
         deviceId: String,
         status: String
-
     ) {
 
         db.collection("houses")
@@ -171,6 +174,8 @@ class FirebaseRepository {
             .update("status", status)
 
     }
+
+
 
     fun removeListeners() {
 
