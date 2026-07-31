@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Smart Home Hardware Simulator
+    </title>
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+
+
+<body>
+
+
+    <header class="header">
+
+
+        <div>
+
+            <h1>
+                <i class="fa-solid fa-house"></i>
+
+                Smart Home Hardware Simulator
+            </h1>
+
+
+            <p>
+                Smart Home Monitoring & Control System
+            </p>
+
+
+        </div>
+
+
+
+        <div class="system-status">
+
+            <span class="online-dot"></span>
+
+            System Online
+
+        </div>
+
+
+    </header>
+
+
+
+
+    <!-- ========================= -->
+    <!-- Ground Floor -->
+    <!-- ========================= -->
+
+
+    <section class="floor">
+
+
+        <h2>
+
+            <i class="fa-solid fa-building"></i>
+
+            Ground Floor
+
+        </h2>
+
+
+
+
+
+        <!-- ========================= -->
+        <!-- Living Room -->
+        <!-- ========================= -->
+
+
+        <div class="room">
+
+
+            <h3>
+
+                <i class="fa-solid fa-couch"></i>
+
+                Living Room
+
+            </h3>
+
+
+
+            <div class="device-grid">
+
+
+
+
+
+                <!-- livingRoomLight -->
+
+                <div class="device-card">
+
+
+                    <i class="fa-solid fa-lightbulb device-icon"></i>
+
+
+                    <h4>
+                        Living Room Light
+                    </h4>
+
+
+
+                    <span class="status off" id="livingRoomLightStatus">
+
+                        OFF
+
+                    </span>
+
+
+
+                    <div class="buttons">
+                        <button onclick="updateDevice(
+'livingRoomLight',
+'livingRoomLightStatus',
+'ON'
+)">
+ON
+</button>
+
+
+<button class="off-btn" onclick="updateDevice(
+'livingRoomLight',
+'livingRoomLightStatus',
+'OFF'
+)">
+OFF
+</button> 
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <!-- tvOutlet -->
+
+
+                <div class="device-card">
+
+
+                    <i class="fa-solid fa-plug device-icon"></i>
+
+
+                    <h4>
+                        TV Outlet
+                    </h4>
+
+
+
+                    <span class="status off" id="tvOutletStatus">
+
+                        OFF
+
+                    </span>
+
+
+
+                    <div class="buttons">
+
+
+                        <button onclick="updateDevice(
+'tvOutlet',
+'tvOutletStatus',
+'ON'
+)">
+
+                            ON
+
+                        </button>
+
+
+
+                        <button class="off-btn" onclick="updateDevice(
+'tvOutlet',
+'tvOutletStatus',
+'OFF'
+)">
+
+                            OFF
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <!-- securityCamera -->
+
+
+                <div class="device-card">
+
+
+                    <i class="fa-solid fa-video device-icon"></i>
+
+
+                    <h4>
+                        Security Camera
+                    </h4>
+
+
+
+                    <span class="status off" id="securityCameraStatus">
+
+                        OFF
+
+                    </span>
+
+
+
+                    <img src="https://placehold.co/300x180?text=Security+Camera" class="camera-image">
+
+
+
+                </div>
+
+
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+
+        <!-- ========================= -->
+        <!-- Kitchen -->
+        <!-- ========================= -->
+
+
+        <div class="room">
+
+
+            <h3>
+
+                <i class="fa-solid fa-kitchen-set"></i>
+
+                Kitchen
+
+            </h3>
+
+
+
+            <div class="device-grid">
+
+
+
+
+
+                <!-- kitchenLight -->
+
+
+                <div class="device-card">
+
+
+                    <i class="fa-solid fa-lightbulb device-icon"></i>
+
+
+                    <h4>
+                        Kitchen Light
+                    </h4>
+
+
+                    <span class="status off" id="kitchenLightStatus">
+
+                        OFF
+
+                    </span>
+
+
+
+                    <div class="buttons">
+
+
+                        <button onclick="updateDevice(
+'kitchenLight',
+'kitchenLightStatus',
+'ON'
+)">
+
+                            ON
+
+                        </button>
+
+
+                        <button class="off-btn" onclick="updateDevice(
+'kitchenLight',
+'kitchenLightStatus',
+'OFF'
+)">
+
+                            OFF
+
+                        </button>
+
+
+                    </div>
+
+
+
+                </div>
+
+
+
+
+
+                <!-- kitchenIron -->
+
+
+                <div class="device-card">
+
+
+                    <i class="fa-solid fa-fire device-icon"></i>
+
+
+                    <h4>
+                        Kitchen Iron
+                    </h4>
+
+
+
+                    <span class="status off" id="ironStatus">
+
+                        OFF
+
+                    </span>
+
+
+
+                    <div class="buttons">
+
+
+                        <button onclick="ironControl('ON')">
+
+                            ON
+
+                        </button>
+
+
+
+                        <button class="off-btn" onclick="ironControl('OFF')">
+
+                            OFF
+
+                        </button>
+
+
+
+                    </div>
+
+
+
+                    <small>
+
+                        Auto OFF after 2 minutes
+
+                    </small>
+
+
+
+                </div>
+
+
+
+
+            </div>
+
+
+
+        </div>
+        <!-- ========================= -->
+        <!-- Garage -->
+        <!-- Firestore:
+houses
+ └ house1
+    └ floors
+       └ groundFloor
+          └ rooms
+             └ garage
+                └ devices
+                   ├ garageLight
+                   └ garageCamera
+-->
+        <!-- ========================= -->
+
+        <div class="room">
+
+            <h3>
+                <i class="fa-solid fa-warehouse"></i>
+                Garage
+            </h3>
+
+
+            <div class="device-grid">
+
+
+                <!-- Garage Light -->
+
+                <div class="device-card">
+
+                    <i class="fa-solid fa-lightbulb device-icon"></i>
+
+                    <h4>Garage Light</h4>
+
+
+                    <span class="status off" id="garageLightStatus">
+                        OFF
+                    </span>
+
+
+                    <div class="buttons">
+
+                        <button onclick="updateDevice(
+                    'garageLight',
+                    'garageLightStatus',
+                    'ON'
+                )">
+                            ON
+                        </button>
+
+
+                        <button class="off-btn" onclick="updateDevice(
+                    'garageLight',
+                    'garageLightStatus',
+                    'OFF'
+                )">
+                            OFF
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Garage Camera -->
+
+
+                <div class="device-card">
+
+                    <i class="fa-solid fa-video device-icon"></i>
+
+
+                    <h4>Garage Camera</h4>
+
+
+                    <span class="status on" id="garageCameraStatus">
+                        ONLINE
+                    </span>
+
+
+                    <img src="https://placehold.co/250x150?text=Garage+Camera" class="camera-image">
+
+
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+        <!-- ========================= -->
+        <!-- FIRST FLOOR -->
+        <!-- Firestore:
+floors
+ └ firstFloor
+-->
+        <!-- ========================= -->
+
+
+        <section class="floor">
+
+
+            <h2>
+                <i class="fa-solid fa-building"></i>
+                First Floor
+            </h2>
+
+
+
+
+
+            <!-- ========================= -->
+            <!-- Master Bedroom -->
+            <!-- ========================= -->
+
+
+            <div class="room">
+
+
+                <h3>
+                    <i class="fa-solid fa-bed"></i>
+                    Master Bedroom
+                </h3>
+
+
+
+                <div class="device-grid">
+
+
+
+                    <!-- Master Bedroom Light -->
+
+
+                    <div class="device-card">
+
+
+                        <i class="fa-solid fa-lightbulb device-icon"></i>
+
+
+                        <h4>
+                            Master Bedroom Light
+                        </h4>
+
+
+
+                        <span class="status off" id="masterBedroomLightStatus">
+
+                            OFF
+
+                        </span>
+
+
+
+                        <div class="buttons">
+
+
+                            <button onclick="updateDevice(
+'masterBedroomLight',
+'masterBedroomLightStatus',
+'ON'
+)">
+                                ON
+                            </button>
+
+
+
+                            <button class="off-btn" onclick="updateDevice(
+'masterBedroomLight',
+'masterBedroomLightStatus',
+'OFF'
+)">
+                                OFF
+                            </button>
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+                    <!-- switchPanel1 -->
+
+
+                    <div class="device-card">
+
+
+                        <i class="fa-solid fa-sliders device-icon"></i>
+
+
+                        <h4>
+                            3 Switch Panel
+                        </h4>
+
+
+
+                        <span class="status off" id="switchPanelStatus">
+
+                            OFF
+
+                        </span>
+
+
+
+
+                        <div class="switch-row">
+
+                            <span>
+                                💡 Light 1
+                            </span>
+
+
+                            <label class="toggle">
+
+                                <input type="checkbox" onclick="updateSwitch(
+'switchPanel1',
+'light1',
+this.checked
+)">
+
+                                <span class="slider"></span>
+
+                            </label>
+
+
+                        </div>
+
+
+
+
+
+                        <div class="switch-row">
+
+                            <span>
+                                🌀 Fan
+                            </span>
+
+
+                            <label class="toggle">
+
+                                <input type="checkbox" onclick="updateSwitch(
+'switchPanel1',
+'fan',
+this.checked
+)">
+
+                                <span class="slider"></span>
+
+                            </label>
+
+
+                        </div>
+
+
+
+
+
+                        <div class="switch-row">
+
+
+                            <span>
+                                ❄️ AC
+                            </span>
+
+
+
+                            <label class="toggle">
+
+
+                                <input type="checkbox" onclick="updateSwitch(
+'switchPanel1',
+'ac',
+this.checked
+)">
+
+
+
+                                <span class="slider"></span>
+
+
+                            </label>
+
+
+                        </div>
+
+
+
+
+                    </div>
+
+
+
+
+
+                </div>
+
+            </div>
+
+
+
+
+
+
+            <!-- ========================= -->
+            <!-- Bedroom -->
+            <!-- ========================= -->
+
+
+            <div class="room">
+
+
+                <h3>
+
+                    <i class="fa-solid fa-bed"></i>
+
+                    Bedroom
+
+                </h3>
+
+
+
+
+                <div class="device-grid">
+
+
+
+                    <!-- Bedroom Light -->
+
+
+                    <div class="device-card">
+
+
+                        <i class="fa-solid fa-lightbulb device-icon"></i>
+
+
+                        <h4>
+                            Bedroom Light
+                        </h4>
+
+
+
+                        <span class="status off" id="bedroomLightStatus">
+
+                            OFF
+
+                        </span>
+
+
+
+
+                        <div class="buttons">
+
+
+                            <button onclick="updateDevice(
+'bedroomLight',
+'bedroomLightStatus',
+'ON'
+)">
+                                ON
+                            </button>
+
+
+
+                            <button class="off-btn" onclick="updateDevice(
+'bedroomLight',
+'bedroomLightStatus',
+'OFF'
+)">
+                                OFF
+                            </button>
+
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+                    <!-- Bedroom Outlet -->
+
+
+                    <div class="device-card">
+
+
+                        <i class="fa-solid fa-plug device-icon"></i>
+
+
+
+                        <h4>
+                            Bedroom Outlet
+                        </h4>
+
+
+
+                        <span class="status off" id="bedroomOutletStatus">
+
+                            OFF
+
+                        </span>
+
+
+
+
+                        <div class="buttons">
+
+
+                            <button onclick="updateDevice(
+'bedroomOutlet',
+'bedroomOutletStatus',
+'ON'
+)">
+                                ON
+                            </button>
+
+
+
+
+                            <button class="off-btn" onclick="updateDevice(
+'bedroomOutlet',
+'bedroomOutletStatus',
+'OFF'
+)">
+                                OFF
+                            </button>
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <!-- ========================= -->
+            <!-- Bathroom -->
+            <!-- ========================= -->
+
+
+            <div class="room">
+
+
+                <h3>
+
+                    <i class="fa-solid fa-bath"></i>
+
+                    Bathroom
+
+                </h3>
+
+
+
+
+                <div class="device-grid">
+
+
+
+                    <div class="device-card">
+
+
+                        <i class="fa-solid fa-lightbulb device-icon"></i>
+
+
+
+                        <h4>
+                            Bathroom Light
+                        </h4>
+
+
+
+                        <span class="status off" id="bathroomLightStatus">
+
+                            OFF
+
+                        </span>
+
+
+
+
+                        <div class="buttons">
+
+
+                            <button onclick="updateDevice(
+'bathroomLight',
+'bathroomLightStatus',
+'ON'
+)">
+                                ON
+                            </button>
+
+
+
+                            <button class="off-btn" onclick="updateDevice(
+'bathroomLight',
+'bathroomLightStatus',
+'OFF'
+)">
+                                OFF
+                            </button>
+
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+            </div>
+
+
+
+        </section>
+
+    </section>
+</body>
+
+</html>
+
+<footer>
+
+Smart Home Monitoring & Control System<br>
+SCS3311 Mini Project<br>
+Hardware Simulator
+
+</footer>
+
+
+<!-- Firebase -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+ 
+<!-- Project JS -->
+
+<script src="firebase.js"></script>
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>

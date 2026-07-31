@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <gradient
+        android:angle="270"
+        android:startColor="#82E5F5"
+        android:endColor="#64CFE3" />
+
+    <corners
+        android:topLeftRadius="7dp"
+        android:topRightRadius="7dp" />
+
+</shape>awani@
