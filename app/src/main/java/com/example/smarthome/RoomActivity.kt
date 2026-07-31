@@ -1,5 +1,6 @@
 package com.example.smarthome
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,7 +29,6 @@ class RoomActivity : AppCompatActivity() {
     private lateinit var tvNoDevices: TextView
     private lateinit var deviceContainer: LinearLayout
 
-    
     private var roomId: String = ""
     private var roomName: String = ""
 
@@ -46,12 +46,11 @@ class RoomActivity : AppCompatActivity() {
         loadTemporaryDevices()
         displayDevices()
         setupClickListeners()
-
-
     }
 
     private fun readRoomInformation() {
         roomId = intent.getStringExtra(EXTRA_ROOM_ID).orEmpty()
+
         roomName = intent.getStringExtra(EXTRA_ROOM_NAME)
             ?: "Unknown Room"
     }
@@ -87,6 +86,7 @@ class RoomActivity : AppCompatActivity() {
         devices.clear()
 
         when (roomId) {
+
             "living_room" -> {
                 devices.addAll(
                     listOf(
@@ -129,6 +129,7 @@ class RoomActivity : AppCompatActivity() {
                             name = "3-Switch Board",
                             type = "Switch Board",
                             status = "ON",
+                            powerWatts = 40,
                             primaryAction = "Open Switches",
                             secondaryAction = "Details"
                         ),
@@ -219,6 +220,7 @@ class RoomActivity : AppCompatActivity() {
                             name = "Garage Door Switch",
                             type = "Door Switch",
                             status = "OFF",
+                            powerWatts = 5,
                             secondaryAction = "Details"
                         ),
                         RoomDevice(
@@ -276,6 +278,7 @@ class RoomActivity : AppCompatActivity() {
                             name = "3-Switch Board",
                             type = "Switch Board",
                             status = "OFF",
+                            powerWatts = 40,
                             primaryAction = "Open Switches",
                             secondaryAction = "Details"
                         )
@@ -317,6 +320,7 @@ class RoomActivity : AppCompatActivity() {
                             name = "2-Switch Board",
                             type = "Switch Board",
                             status = "OFF",
+                            powerWatts = 26,
                             primaryAction = "Open Switches",
                             secondaryAction = "Details"
                         )
@@ -374,12 +378,11 @@ class RoomActivity : AppCompatActivity() {
     }
 
     private fun addDeviceCard(device: RoomDevice) {
-        val card = LayoutInflater.from(this)
-            .inflate(
-                R.layout.item_room_device,
-                deviceContainer,
-                false
-            )
+        val card = LayoutInflater.from(this).inflate(
+            R.layout.item_room_device,
+            deviceContainer,
+            false
+        )
 
         val tvDeviceIcon =
             card.findViewById<TextView>(R.id.tvDeviceIcon)
@@ -430,10 +433,7 @@ class RoomActivity : AppCompatActivity() {
             statusText = tvDeviceStatus
         )
 
-        switchDevice.setOnCheckedChangeListener {
-                _,
-                isChecked ->
-
+        switchDevice.setOnCheckedChangeListener { _, isChecked ->
             device.status = if (isChecked) "ON" else "OFF"
 
             updateDeviceStatusView(
@@ -455,6 +455,8 @@ class RoomActivity : AppCompatActivity() {
             device.secondaryAction != null
         ) {
             actionContainer.visibility = View.VISIBLE
+        } else {
+            actionContainer.visibility = View.GONE
         }
 
         if (device.primaryAction != null) {
@@ -494,17 +496,21 @@ class RoomActivity : AppCompatActivity() {
     ) {
         if (device.status == "ON") {
             statusText.text = "ON"
+
             statusText.setTextColor(
                 Color.parseColor("#70EAA4")
             )
+
             statusText.setBackgroundResource(
                 R.drawable.device_status_on_background
             )
         } else {
             statusText.text = "OFF"
+
             statusText.setTextColor(
                 Color.parseColor("#A9B4C7")
             )
+
             statusText.setBackgroundResource(
                 R.drawable.device_status_off_background
             )
@@ -536,8 +542,8 @@ class RoomActivity : AppCompatActivity() {
             return
         }
 
-        devices.forEach {
-            it.status = "OFF"
+        devices.forEach { device ->
+            device.status = "OFF"
         }
 
         displayDevices()
@@ -553,24 +559,68 @@ class RoomActivity : AppCompatActivity() {
         device: RoomDevice,
         action: String
     ) {
-        Toast.makeText(
+        when (action) {
+
+            "Open Switches" -> {
+                openSwitchBoard(device)
+            }
+
+            "Schedule" -> {
+                Toast.makeText(
+                    this,
+                    "Schedule screen will be created later",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            "View Camera" -> {
+                Toast.makeText(
+                    this,
+                    "Camera screen will be created later",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            "Set Duration" -> {
+                Toast.makeText(
+                    this,
+                    "Iron safety timer screen will be created later",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            else -> {
+                Toast.makeText(
+                    this,
+                    "$action: ${device.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun openSwitchBoard(device: RoomDevice) {
+        val intent = Intent(
             this,
-            "$action: ${device.name}",
-            Toast.LENGTH_SHORT
-        ).show()
+            SwitchBoardActivity::class.java
+        )
 
-        /*
-        Later replace this section with navigation:
+        intent.putExtra(
+            SwitchBoardActivity.EXTRA_BOARD_ID,
+            device.id
+        )
 
-        Schedule:
-        startActivity(Intent(this, ScheduleActivity::class.java))
+        intent.putExtra(
+            SwitchBoardActivity.EXTRA_BOARD_NAME,
+            device.name
+        )
 
-        Camera:
-        startActivity(Intent(this, CameraActivity::class.java))
+        intent.putExtra(
+            SwitchBoardActivity.EXTRA_ROOM_NAME,
+            roomName
+        )
 
-        Switch board:
-        startActivity(Intent(this, SwitchBoardActivity::class.java))
-        */
+        startActivity(intent)
     }
 
     private fun getDeviceIcon(type: String): String {

@@ -10,10 +10,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartHome">
+
         <activity
             android:name=".RoomActivity"
             android:exported="false" />
-
         <activity
             android:name=".FirstFloorActivity"
             android:exported="false" />
@@ -35,7 +35,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".SwitchBoardActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
