@@ -490,6 +490,64 @@ class RoomActivity : AppCompatActivity() {
         deviceContainer.addView(card)
     }
 
+    private fun openLightSchedule(device: RoomDevice) {
+        val intent = Intent(
+            this,
+            ScheduleActivity::class.java
+        )
+
+        intent.putExtra(
+            ScheduleActivity.EXTRA_DEVICE_ID,
+            device.id
+        )
+
+        intent.putExtra(
+            ScheduleActivity.EXTRA_DEVICE_NAME,
+            device.name
+        )
+
+        intent.putExtra(
+            ScheduleActivity.EXTRA_DEVICE_TYPE,
+            device.type
+        )
+
+        intent.putExtra(
+            ScheduleActivity.EXTRA_SCHEDULE_MODE,
+            ScheduleActivity.MODE_LIGHT_SCHEDULE
+        )
+
+        startActivity(intent)
+    }
+
+    private fun openIronSafetySchedule(device: RoomDevice) {
+        val intent = Intent(
+            this,
+            ScheduleActivity::class.java
+        )
+
+        intent.putExtra(
+            ScheduleActivity.EXTRA_DEVICE_ID,
+            device.id
+        )
+
+        intent.putExtra(
+            ScheduleActivity.EXTRA_DEVICE_NAME,
+            device.name
+        )
+
+        intent.putExtra(
+            ScheduleActivity.EXTRA_DEVICE_TYPE,
+            device.type
+        )
+
+        intent.putExtra(
+            ScheduleActivity.EXTRA_SCHEDULE_MODE,
+            ScheduleActivity.MODE_IRON_DURATION
+        )
+
+        startActivity(intent)
+    }
+
     private fun updateDeviceStatusView(
         device: RoomDevice,
         statusText: TextView
