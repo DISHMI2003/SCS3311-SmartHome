@@ -1,5 +1,6 @@
 package com.example.smarthome
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -61,14 +62,12 @@ class FirstFloorActivity : AppCompatActivity() {
         roomId: String,
         roomName: String
     ) {
-        /*
-        After RoomActivity is created, replace this Toast with:
-
         val intent = Intent(this, RoomActivity::class.java)
+
         intent.putExtra("roomId", roomId)
         intent.putExtra("roomName", roomName)
+
         startActivity(intent)
-        */
 
         Toast.makeText(
             this,
