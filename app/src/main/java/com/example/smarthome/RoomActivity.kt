@@ -519,6 +519,30 @@ class RoomActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun openCamera(device: RoomDevice) {
+        val intent = Intent(
+            this,
+            CameraActivity::class.java
+        )
+
+        intent.putExtra(
+            CameraActivity.EXTRA_CAMERA_ID,
+            device.id
+        )
+
+        intent.putExtra(
+            CameraActivity.EXTRA_CAMERA_NAME,
+            device.name
+        )
+
+        intent.putExtra(
+            CameraActivity.EXTRA_ROOM_NAME,
+            roomName
+        )
+
+        startActivity(intent)
+    }
+
     private fun openIronSafetySchedule(device: RoomDevice) {
         val intent = Intent(
             this,
@@ -624,27 +648,15 @@ class RoomActivity : AppCompatActivity() {
             }
 
             "Schedule" -> {
-                Toast.makeText(
-                    this,
-                    "Schedule screen will be created later",
-                    Toast.LENGTH_SHORT
-                ).show()
+                openLightSchedule(device)
             }
 
             "View Camera" -> {
-                Toast.makeText(
-                    this,
-                    "Camera screen will be created later",
-                    Toast.LENGTH_SHORT
-                ).show()
+                openCamera(device)
             }
 
             "Set Duration" -> {
-                Toast.makeText(
-                    this,
-                    "Iron safety timer screen will be created later",
-                    Toast.LENGTH_SHORT
-                ).show()
+                openIronSafetySchedule(device)
             }
 
             else -> {

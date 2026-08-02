@@ -231,9 +231,9 @@ class ScheduleActivity : AppCompatActivity() {
         }
     }
 
-    // ----------------------------------------------------------------
+
     // Light schedule
-    // ----------------------------------------------------------------
+
 
     private fun loadLightSchedule() {
         val enabled = preferences.getBoolean(
@@ -428,9 +428,8 @@ class ScheduleActivity : AppCompatActivity() {
         btnSelectOffTime.alpha = if (enabled) 1f else 0.45f
     }
 
-    // ----------------------------------------------------------------
+
     // Iron safety
-    // ----------------------------------------------------------------
 
     private fun loadIronSettings() {
         val enabled = preferences.getBoolean(
@@ -567,14 +566,7 @@ class ScheduleActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
 
-                /*
-                 * Later update Firebase:
-                 *
-                 * FirebaseFirestore.getInstance()
-                 *     .collection("devices")
-                 *     .document(deviceId)
-                 *     .update("status", "OFF")
-                 */
+
             }
         }.start()
     }
@@ -619,9 +611,8 @@ class ScheduleActivity : AppCompatActivity() {
         btnStartTimerTest.alpha = if (enabled) 1f else 0.45f
     }
 
-    // ----------------------------------------------------------------
+
     // Utility functions
-    // ----------------------------------------------------------------
 
     private fun formatTime(hour: Int, minute: Int): String {
         val calendar = Calendar.getInstance()
