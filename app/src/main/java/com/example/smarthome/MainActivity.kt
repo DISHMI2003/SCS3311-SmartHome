@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cardFirstFloor: LinearLayout
     private lateinit var cardAlertSummary: LinearLayout
 
+    private lateinit var recentActivityContainer: LinearLayout
+
     private lateinit var btnReports: Button
     private lateinit var btnLogout: Button
 
