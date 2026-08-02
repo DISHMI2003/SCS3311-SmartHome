@@ -94,7 +94,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnReports.setOnClickListener {
-            showMessage("Reports screen will be created later")
+            val intent = Intent(
+                this,
+                ReportsActivity::class.java
+            )
+
+            startActivity(intent)
         }
 
         btnLogout.setOnClickListener {
