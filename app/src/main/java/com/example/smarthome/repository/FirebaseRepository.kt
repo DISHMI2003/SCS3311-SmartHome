@@ -188,6 +188,69 @@ class FirebaseRepository {
             .update("status", status)
     }
 
+    // SWITCH BOARD
+
+    private var switchBoardListener: ListenerRegistration? = null
+
+    fun listenToSwitchBoard(
+        floorId: String,
+        roomId: String,
+        deviceId: String,
+        onUpdate: (Map<String, Boolean>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        switchBoardListener?.remove()
+
+        switchBoardListener = db.collection("houses")
+            .document("house1")
+            .collection("floors")
+            .document(floorId)
+            .collection("rooms")
+            .document(roomId)
+            .collection("devices")
+            .document(deviceId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onError(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot == null || !snapshot.exists()) {
+                    onUpdate(emptyMap())
+                    return@addSnapshotListener
+                }
+
+                val switches = mutableMapOf<String, Boolean>()
+                switches["light1"] = snapshot.getBoolean("light1") ?: false
+                switches["fan"] = snapshot.getBoolean("fan") ?: false
+                switches["ac"] = snapshot.getBoolean("ac") ?: false
+
+                onUpdate(switches)
+            }
+    }
+
+    fun updateSwitchState(
+        floorId: String,
+        roomId: String,
+        deviceId: String,
+        switchName: String,
+        state: Boolean
+    ) {
+        val updates = mapOf(
+            switchName to state,
+            "status" to if (state) "ON" else "OFF"
+        )
+        db.collection("houses")
+            .document("house1")
+            .collection("floors")
+            .document(floorId)
+            .collection("rooms")
+            .document(roomId)
+            .collection("devices")
+            .document(deviceId)
+            .update(updates)
+    }
+
     // REMOVE LISTENERS
 
     fun removeListeners() {
@@ -196,5 +259,6 @@ class FirebaseRepository {
         roomListener?.remove()
         deviceListener?.remove()
         dashboardListener?.remove()
+        switchBoardListener?.remove()
     }
 }
