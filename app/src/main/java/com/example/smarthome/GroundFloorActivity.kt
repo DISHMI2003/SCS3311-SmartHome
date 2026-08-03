@@ -62,14 +62,13 @@ class GroundFloorActivity : AppCompatActivity() {
         roomId: String,
         roomName: String
     ) {
-        /*
-        After creating RoomActivity, replace the Toast with:
+
 
         val intent = Intent(this, RoomActivity::class.java)
         intent.putExtra("roomId", roomId)
         intent.putExtra("roomName", roomName)
         startActivity(intent)
-        */
+
 
         Toast.makeText(
             this,
