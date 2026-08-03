@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.smarthome.repository.FirebaseRepository
-
+import com.google.firebase.auth.FirebaseAuth
 class MainActivity : AppCompatActivity() {
 
     // Firebase
@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         // -----------------------------
 
         repository = FirebaseRepository()
+        loadDashboard()
 
         repository.listenToFloors(
 
@@ -129,18 +130,49 @@ class MainActivity : AppCompatActivity() {
         navSettings = findViewById(R.id.navSettings)
 
     }
-
     private fun loadTemporaryDashboardData() {
 
-        tvGreeting.text = "Hello, Pawani"
-        tvDevicesOn.text = "8"
-        tvOnlineDevices.text = "22"
-        tvAlerts.text = "1"
-        tvEnergyUsage.text = "12.4"
-        tvNotificationCount.text = "1"
+        tvGreeting.text = "Hello"
+        tvDevicesOn.text = "0"
+        tvOnlineDevices.text = "0"
+        tvAlerts.text = "0"
+        tvEnergyUsage.text = "0.0"
+        tvNotificationCount.text = "0"
 
     }
+    private fun loadDashboard() {
 
+        repository.listenToDashboard(
+
+            onUpdate = { dashboard ->
+
+                tvDevicesOn.text =
+                    dashboard.devicesOn.toString()
+
+                tvOnlineDevices.text =
+                    dashboard.onlineDevices.toString()
+
+                tvAlerts.text =
+                    dashboard.alerts.toString()
+
+                tvEnergyUsage.text =
+                    "${dashboard.energyUsage} kWh"
+
+            },
+
+            onError = { exception ->
+
+                Toast.makeText(
+                    this,
+                    exception.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            }
+
+        )
+
+    }
     private fun setupClickListeners() {
 
         cardGroundFloor.setOnClickListener {
@@ -239,6 +271,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun logout() {
 
+        FirebaseAuth.getInstance().signOut()
+
         val intent = Intent(
             this,
             LoginActivity::class.java
@@ -251,7 +285,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
 
         finish()
-
     }
 
     private fun showMessage(message: String) {

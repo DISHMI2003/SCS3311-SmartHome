@@ -1,6 +1,7 @@
 package com.example.smarthome.repository
 
 import com.example.smarthome.firebase.FirebaseManager
+import com.example.smarthome.model.DashboardSummary
 import com.example.smarthome.model.Device
 import com.example.smarthome.model.Floor
 import com.google.firebase.firestore.ListenerRegistration
@@ -12,7 +13,7 @@ class FirebaseRepository {
     private var floorListener: ListenerRegistration? = null
     private var roomListener: ListenerRegistration? = null
     private var deviceListener: ListenerRegistration? = null
-
+    private var dashboardListener: ListenerRegistration? = null
 
     // FLOORS
 
@@ -49,13 +50,10 @@ class FirebaseRepository {
                 }
 
                 onUpdate(floors)
-
             }
-
     }
 
-
-    //  ROOMS
+    // ROOMS
 
     fun listenToRooms(
         floorId: String,
@@ -87,11 +85,8 @@ class FirebaseRepository {
                 }
 
                 onUpdate(rooms)
-
             }
-
     }
-
 
     // DEVICES
 
@@ -126,33 +121,52 @@ class FirebaseRepository {
                 for (document in snapshot.documents) {
 
                     val device = Device(
-
                         id = document.id,
-
                         name = document.getString("name") ?: "",
-
                         room = roomId,
-
                         type = document.getString("type") ?: "",
-
                         status = document.getString("status") ?: "OFF",
-
                         maxOnDuration = document.getLong("maxOnDuration") ?: 0,
-
                         autoOff = document.getBoolean("autoOff") ?: false
-
                     )
 
                     devices.add(device)
-
                 }
 
                 onUpdate(devices)
-
             }
-
     }
 
+    // DASHBOARD
+
+    fun listenToDashboard(
+        onUpdate: (DashboardSummary) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+
+        dashboardListener = db.collection("houses")
+            .document("house1")
+            .addSnapshotListener { snapshot, error ->
+
+                if (error != null) {
+                    onError(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot == null || !snapshot.exists()) {
+                    return@addSnapshotListener
+                }
+
+                val summary = DashboardSummary(
+                    devicesOn = snapshot.getLong("devicesOn")?.toInt() ?: 0,
+                    onlineDevices = snapshot.getLong("onlineDevices")?.toInt() ?: 0,
+                    alerts = snapshot.getLong("alerts")?.toInt() ?: 0,
+                    energyUsage = snapshot.getDouble("energyUsage") ?: 0.0
+                )
+
+                onUpdate(summary)
+            }
+    }
 
     // UPDATE DEVICE
 
@@ -172,17 +186,15 @@ class FirebaseRepository {
             .collection("devices")
             .document(deviceId)
             .update("status", status)
-
     }
 
-
+    // REMOVE LISTENERS
 
     fun removeListeners() {
 
         floorListener?.remove()
         roomListener?.remove()
         deviceListener?.remove()
-
+        dashboardListener?.remove()
     }
-
 }
