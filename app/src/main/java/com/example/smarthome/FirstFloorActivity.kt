@@ -38,7 +38,7 @@ class FirstFloorActivity : AppCompatActivity() {
 
         cardMasterBedroom.setOnClickListener {
             openRoom(
-                roomId = "master_bedroom",
+                roomId = "masterBedroom",
                 roomName = "Master Bedroom"
             )
         }
@@ -64,6 +64,7 @@ class FirstFloorActivity : AppCompatActivity() {
     ) {
         val intent = Intent(this, RoomActivity::class.java)
 
+        intent.putExtra("floorId", "firstFloor")
         intent.putExtra("roomId", roomId)
         intent.putExtra("roomName", roomName)
 

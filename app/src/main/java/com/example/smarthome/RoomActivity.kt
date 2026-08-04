@@ -11,10 +11,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import com.example.smarthome.repository.FirebaseRepository
+import com.example.smarthome.model.Device
 
 class RoomActivity : AppCompatActivity() {
 
     companion object {
+        const val EXTRA_FLOOR_ID = "floorId"
         const val EXTRA_ROOM_ID = "roomId"
         const val EXTRA_ROOM_NAME = "roomName"
     }
@@ -29,10 +32,12 @@ class RoomActivity : AppCompatActivity() {
     private lateinit var tvNoDevices: TextView
     private lateinit var deviceContainer: LinearLayout
 
+    private var floorId: String = ""
     private var roomId: String = ""
     private var roomName: String = ""
 
     private val devices = mutableListOf<RoomDevice>()
+    private lateinit var repository: FirebaseRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,12 +48,20 @@ class RoomActivity : AppCompatActivity() {
         readRoomInformation()
         initializeViews()
         setupHeader()
-        loadTemporaryDevices()
-        displayDevices()
+        
+        repository = FirebaseRepository()
+        loadDevicesFromFirebase()
+        
         setupClickListeners()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        repository.removeListeners()
+    }
+
     private fun readRoomInformation() {
+        floorId = intent.getStringExtra(EXTRA_FLOOR_ID).orEmpty()
         roomId = intent.getStringExtra(EXTRA_ROOM_ID).orEmpty()
 
         roomName = intent.getStringExtra(EXTRA_ROOM_NAME)
@@ -82,283 +95,37 @@ class RoomActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadTemporaryDevices() {
-        devices.clear()
-
-        when (roomId) {
-
-            "living_room" -> {
-                devices.addAll(
-                    listOf(
-                        RoomDevice(
-                            id = "living_room_main_light",
-                            name = "Main Light",
-                            type = "Light",
-                            status = "ON",
-                            powerWatts = 18,
-                            primaryAction = "Schedule",
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "living_room_wall_light",
-                            name = "Wall Light",
-                            type = "Light",
-                            status = "OFF",
-                            powerWatts = 12,
-                            primaryAction = "Schedule",
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "living_room_fan",
-                            name = "Ceiling Fan",
-                            type = "Fan",
-                            status = "ON",
-                            powerWatts = 75,
-                            secondaryAction = "Speed"
-                        ),
-                        RoomDevice(
-                            id = "living_room_tv_outlet",
-                            name = "TV Outlet",
-                            type = "Outlet",
-                            status = "OFF",
-                            powerWatts = 120,
-                            secondaryAction = "Usage"
-                        ),
-                        RoomDevice(
-                            id = "living_room_switch_board",
-                            name = "3-Switch Board",
-                            type = "Switch Board",
-                            status = "ON",
-                            powerWatts = 40,
-                            primaryAction = "Open Switches",
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "living_room_camera",
-                            name = "Security Camera",
-                            type = "Camera",
-                            status = "ON",
-                            powerWatts = 8,
-                            primaryAction = "View Camera",
-                            secondaryAction = "Refresh"
-                        )
-                    )
-                )
-            }
-
-            "kitchen" -> {
-                devices.addAll(
-                    listOf(
-                        RoomDevice(
-                            id = "kitchen_main_light",
-                            name = "Kitchen Light",
-                            type = "Light",
-                            status = "ON",
-                            powerWatts = 20,
-                            primaryAction = "Schedule",
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "kitchen_refrigerator_outlet",
-                            name = "Refrigerator Outlet",
-                            type = "Outlet",
-                            status = "ON",
-                            powerWatts = 150,
-                            secondaryAction = "Usage"
-                        ),
-                        RoomDevice(
-                            id = "kitchen_cooker_outlet",
-                            name = "Cooker Outlet",
-                            type = "Outlet",
-                            status = "OFF",
-                            powerWatts = 1200,
-                            secondaryAction = "Usage"
-                        ),
-                        RoomDevice(
-                            id = "kitchen_iron",
-                            name = "Iron Safety Outlet",
-                            type = "Iron",
-                            status = "OFF",
-                            powerWatts = 1000,
-                            primaryAction = "Set Duration",
-                            secondaryAction = "Safety"
-                        ),
-                        RoomDevice(
-                            id = "kitchen_exhaust_fan",
-                            name = "Exhaust Fan",
-                            type = "Fan",
-                            status = "ON",
-                            powerWatts = 60,
-                            secondaryAction = "Speed"
-                        )
-                    )
-                )
-            }
-
-            "garage" -> {
-                devices.addAll(
-                    listOf(
-                        RoomDevice(
-                            id = "garage_main_light",
-                            name = "Garage Light",
-                            type = "Light",
-                            status = "ON",
-                            powerWatts = 25,
-                            primaryAction = "Schedule",
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "garage_charging_outlet",
-                            name = "Vehicle Charging Outlet",
-                            type = "Outlet",
-                            status = "OFF",
-                            powerWatts = 2200,
-                            secondaryAction = "Usage"
-                        ),
-                        RoomDevice(
-                            id = "garage_door_switch",
-                            name = "Garage Door Switch",
-                            type = "Door Switch",
-                            status = "OFF",
-                            powerWatts = 5,
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "garage_camera",
-                            name = "Garage Camera",
-                            type = "Camera",
-                            status = "ON",
-                            powerWatts = 8,
-                            primaryAction = "View Camera",
-                            secondaryAction = "Refresh"
-                        )
-                    )
-                )
-            }
-
-            "master_bedroom" -> {
-                devices.addAll(
-                    listOf(
-                        RoomDevice(
-                            id = "master_bedroom_main_light",
-                            name = "Main Light",
-                            type = "Light",
-                            status = "ON",
-                            powerWatts = 18,
-                            primaryAction = "Schedule",
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "master_bedroom_bedside_light",
-                            name = "Bedside Light",
-                            type = "Light",
-                            status = "OFF",
-                            powerWatts = 10,
-                            primaryAction = "Schedule",
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "master_bedroom_fan",
-                            name = "Ceiling Fan",
-                            type = "Fan",
-                            status = "ON",
-                            powerWatts = 75,
-                            secondaryAction = "Speed"
-                        ),
-                        RoomDevice(
-                            id = "master_bedroom_ac_outlet",
-                            name = "Air Conditioner Outlet",
-                            type = "Outlet",
-                            status = "OFF",
-                            powerWatts = 1400,
-                            secondaryAction = "Usage"
-                        ),
-                        RoomDevice(
-                            id = "master_bedroom_switch_board",
-                            name = "3-Switch Board",
-                            type = "Switch Board",
-                            status = "OFF",
-                            powerWatts = 40,
-                            primaryAction = "Open Switches",
-                            secondaryAction = "Details"
-                        )
-                    )
-                )
-            }
-
-            "bedroom" -> {
-                devices.addAll(
-                    listOf(
-                        RoomDevice(
-                            id = "bedroom_main_light",
-                            name = "Main Light",
-                            type = "Light",
-                            status = "ON",
-                            powerWatts = 18,
-                            primaryAction = "Schedule",
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "bedroom_night_light",
-                            name = "Night Light",
-                            type = "Light",
-                            status = "OFF",
-                            powerWatts = 8,
-                            primaryAction = "Schedule",
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "bedroom_fan",
-                            name = "Ceiling Fan",
-                            type = "Fan",
-                            status = "ON",
-                            powerWatts = 70,
-                            secondaryAction = "Speed"
-                        ),
-                        RoomDevice(
-                            id = "bedroom_switch_board",
-                            name = "2-Switch Board",
-                            type = "Switch Board",
-                            status = "OFF",
-                            powerWatts = 26,
-                            primaryAction = "Open Switches",
-                            secondaryAction = "Details"
-                        )
-                    )
-                )
-            }
-
-            "bathroom" -> {
-                devices.addAll(
-                    listOf(
-                        RoomDevice(
-                            id = "bathroom_main_light",
-                            name = "Bathroom Light",
-                            type = "Light",
-                            status = "ON",
-                            powerWatts = 15,
-                            secondaryAction = "Details"
-                        ),
-                        RoomDevice(
-                            id = "bathroom_water_heater",
-                            name = "Water Heater",
-                            type = "Outlet",
-                            status = "OFF",
-                            powerWatts = 1800,
-                            secondaryAction = "Usage"
-                        ),
-                        RoomDevice(
-                            id = "bathroom_exhaust_fan",
-                            name = "Exhaust Fan",
-                            type = "Fan",
-                            status = "OFF",
-                            powerWatts = 45,
-                            secondaryAction = "Speed"
-                        )
-                    )
-                )
-            }
+    private fun loadDevicesFromFirebase() {
+        if (floorId.isEmpty() || roomId.isEmpty()) {
+            Toast.makeText(this, "Invalid room information", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        repository.listenToDevices(
+            floorId = floorId,
+            roomId = roomId,
+            onUpdate = { firebaseDevices ->
+                devices.clear()
+                firebaseDevices.forEach { device ->
+                    // Map Firebase Device to RoomDevice for UI
+                    devices.add(
+                        RoomDevice(
+                            id = device.id,
+                            name = device.name.ifEmpty { device.id },
+                            type = device.type.ifEmpty { "Unknown" },
+                            status = device.status,
+                            powerWatts = 0, // Fallback
+                            primaryAction = null,
+                            secondaryAction = null
+                        )
+                    )
+                }
+                displayDevices()
+            },
+            onError = { e ->
+                Toast.makeText(this, "Error loading devices: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
     private fun displayDevices() {
@@ -426,26 +193,38 @@ class RoomActivity : AppCompatActivity() {
         tvDevicePower.text = "${device.powerWatts} W"
         tvLastUpdated.text = "Updated now"
 
-        switchDevice.isChecked = device.status == "ON"
+        val isCamera = device.type.equals("Camera", ignoreCase = true)
+        
+        switchDevice.isChecked = if (isCamera) {
+            device.status == "ONLINE"
+        } else {
+            device.status == "ON"
+        }
 
         updateDeviceStatusView(
             device = device,
-            statusText = tvDeviceStatus
+            statusText = tvDeviceStatus,
+            isCamera = isCamera
         )
 
-        switchDevice.setOnCheckedChangeListener { _, isChecked ->
-            device.status = if (isChecked) "ON" else "OFF"
-
-            updateDeviceStatusView(
-                device = device,
-                statusText = tvDeviceStatus
+        switchDevice.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (!buttonView.isPressed) return@setOnCheckedChangeListener
+            val newStatus = if (isChecked) {
+                if (isCamera) "ONLINE" else "ON"
+            } else {
+                if (isCamera) "DISCONNECTED" else "OFF"
+            }
+            
+            repository.updateDeviceStatus(
+                floorId = floorId,
+                roomId = roomId,
+                deviceId = device.id,
+                status = newStatus
             )
-
-            updateSummary()
-
+            
             Toast.makeText(
                 this,
-                "${device.name} turned ${device.status}",
+                "${device.name} turning $newStatus",
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -550,10 +329,13 @@ class RoomActivity : AppCompatActivity() {
 
     private fun updateDeviceStatusView(
         device: RoomDevice,
-        statusText: TextView
+        statusText: TextView,
+        isCamera: Boolean = false
     ) {
-        if (device.status == "ON") {
-            statusText.text = "ON"
+        val isOn = if (isCamera) device.status == "ONLINE" else device.status == "ON"
+        
+        if (isOn) {
+            statusText.text = if (isCamera) "ONLINE" else "ON"
 
             statusText.setTextColor(
                 Color.parseColor("#70EAA4")
@@ -563,7 +345,7 @@ class RoomActivity : AppCompatActivity() {
                 R.drawable.device_status_on_background
             )
         } else {
-            statusText.text = "OFF"
+            statusText.text = if (isCamera) "OFFLINE" else "OFF"
 
             statusText.setTextColor(
                 Color.parseColor("#A9B4C7")
@@ -601,7 +383,14 @@ class RoomActivity : AppCompatActivity() {
         }
 
         devices.forEach { device ->
-            device.status = "OFF"
+            if (device.status == "ON") {
+                repository.updateDeviceStatus(
+                    floorId = floorId,
+                    roomId = roomId,
+                    deviceId = device.id,
+                    status = "OFF"
+                )
+            }
         }
 
         displayDevices()
@@ -661,6 +450,11 @@ class RoomActivity : AppCompatActivity() {
         val intent = Intent(
             this,
             SwitchBoardActivity::class.java
+        )
+
+        intent.putExtra(
+            SwitchBoardActivity.EXTRA_FLOOR_ID,
+            floorId
         )
 
         intent.putExtra(
