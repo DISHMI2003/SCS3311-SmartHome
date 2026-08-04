@@ -10,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
@@ -20,6 +21,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var tvForgotPassword: TextView
     private lateinit var tvRegister: TextView
 
+    private lateinit var auth: FirebaseAuth
+
     private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +30,15 @@ class LoginActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
         setContentView(R.layout.activity_login)
+
+        auth = FirebaseAuth.getInstance()
+
+        // User already logged in
+        if (auth.currentUser != null) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
 
         initializeViews()
         setupClickListeners()
@@ -52,41 +64,74 @@ class LoginActivity : AppCompatActivity() {
         }
 
         tvForgotPassword.setOnClickListener {
-            Toast.makeText(
-                this,
-                "Password reset will be connected later",
-                Toast.LENGTH_SHORT
-            ).show()
+
+            val email = etEmail.text.toString().trim()
+
+            if (email.isEmpty()) {
+                Toast.makeText(
+                    this,
+                    "Enter your email first",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return@setOnClickListener
+            }
+
+            auth.sendPasswordResetEmail(email)
+                .addOnSuccessListener {
+
+                    Toast.makeText(
+                        this,
+                        "Password reset email sent",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                }
+                .addOnFailureListener {
+
+                    Toast.makeText(
+                        this,
+                        it.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                }
         }
 
         tvRegister.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+
+            startActivity(
+                Intent(
+                    this,
+                    RegisterActivity::class.java
+                )
+            )
+
         }
     }
 
     private fun togglePasswordVisibility() {
+
         isPasswordVisible = !isPasswordVisible
 
-        etPassword.inputType = if (isPasswordVisible) {
-            InputType.TYPE_CLASS_TEXT or
-                    InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-        } else {
-            InputType.TYPE_CLASS_TEXT or
-                    InputType.TYPE_TEXT_VARIATION_PASSWORD
-        }
-
-        btnShowPassword.contentDescription =
+        etPassword.inputType =
             if (isPasswordVisible) {
-                "Hide password"
+
+                InputType.TYPE_CLASS_TEXT or
+                        InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+
             } else {
-                "Show password"
+
+                InputType.TYPE_CLASS_TEXT or
+                        InputType.TYPE_TEXT_VARIATION_PASSWORD
+
             }
 
         etPassword.setSelection(etPassword.text.length)
     }
 
     private fun validateLogin() {
+
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString()
 
@@ -94,42 +139,86 @@ class LoginActivity : AppCompatActivity() {
         etPassword.error = null
 
         when {
+
             email.isEmpty() -> {
-                etEmail.error = "Email address is required"
+
+                etEmail.error = "Email is required"
                 etEmail.requestFocus()
+
             }
 
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                etEmail.error = "Enter a valid email address"
+
+                etEmail.error = "Enter a valid email"
                 etEmail.requestFocus()
+
             }
 
             password.isEmpty() -> {
+
                 etPassword.error = "Password is required"
                 etPassword.requestFocus()
+
             }
 
             password.length < 6 -> {
-                etPassword.error =
-                    "Password must contain at least 6 characters"
+
+                etPassword.error = "Minimum 6 characters"
                 etPassword.requestFocus()
+
             }
 
             else -> {
-                performTemporaryLogin()
+
+                loginUser(email, password)
+
             }
         }
     }
 
-    private fun performTemporaryLogin() {
-        Toast.makeText(
-            this,
-            "Login successful",
-            Toast.LENGTH_SHORT
-        ).show()
+    private fun loginUser(
+        email: String,
+        password: String
+    ) {
 
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+        btnSignIn.isEnabled = false
+        btnSignIn.text = "Signing In..."
+
+        auth.signInWithEmailAndPassword(
+            email,
+            password
+        )
+
+            .addOnSuccessListener {
+
+                Toast.makeText(
+                    this,
+                    "Login Successful",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                startActivity(
+                    Intent(
+                        this,
+                        MainActivity::class.java
+                    )
+                )
+
+                finish()
+
+            }
+
+            .addOnFailureListener {
+
+                btnSignIn.isEnabled = true
+                btnSignIn.text = "Sign In"
+
+                Toast.makeText(
+                    this,
+                    it.message,
+                    Toast.LENGTH_LONG
+                ).show()
+
+            }
     }
 }

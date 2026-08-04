@@ -8,10 +8,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import com.example.smarthome.repository.FirebaseRepository
 
 class SwitchBoardActivity : AppCompatActivity() {
 
     companion object {
+        const val EXTRA_FLOOR_ID = "floorId"
         const val EXTRA_BOARD_ID = "boardId"
         const val EXTRA_BOARD_NAME = "boardName"
         const val EXTRA_ROOM_NAME = "roomName"
@@ -26,11 +28,13 @@ class SwitchBoardActivity : AppCompatActivity() {
     private lateinit var tvTurnOffAllSwitches: TextView
     private lateinit var switchItemContainer: LinearLayout
 
+    private var floorId: String = ""
     private var boardId: String = ""
     private var boardName: String = ""
     private var roomName: String = ""
 
     private val childSwitches = mutableListOf<ChildSwitch>()
+    private lateinit var repository: FirebaseRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,12 +45,20 @@ class SwitchBoardActivity : AppCompatActivity() {
         readIntentData()
         initializeViews()
         setupHeader()
-        loadTemporarySwitches()
-        displayChildSwitches()
+        
+        repository = FirebaseRepository()
+        loadSwitchesFromFirebase()
+        
         setupClickListeners()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        repository.removeListeners()
+    }
+
     private fun readIntentData() {
+        floorId = intent.getStringExtra(EXTRA_FLOOR_ID).orEmpty()
         boardId = intent.getStringExtra(EXTRA_BOARD_ID).orEmpty()
 
         boardName = intent.getStringExtra(EXTRA_BOARD_NAME)
@@ -97,96 +109,46 @@ class SwitchBoardActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadTemporarySwitches() {
-        childSwitches.clear()
+    private fun loadSwitchesFromFirebase() {
+        if (floorId.isEmpty() || boardId.isEmpty()) return
 
-        when (boardId) {
-            "living_room_switch_board" -> {
-                childSwitches.addAll(
-                    listOf(
+        repository.listenToSwitchBoard(
+            floorId = floorId,
+            roomId = if (boardId.startsWith("switchPanel")) "masterBedroom" else "unknown", // Using a fallback logic, ideally should pass roomId in intent
+            deviceId = boardId,
+            onUpdate = { switchMap ->
+                childSwitches.clear()
+                
+                if (switchMap.isNotEmpty()) {
+                    childSwitches.add(
                         ChildSwitch(
-                            id = "switch_1",
-                            name = "Main Light",
-                            status = "ON",
-                            powerWatts = 18
-                        ),
-                        ChildSwitch(
-                            id = "switch_2",
-                            name = "Wall Light",
-                            status = "OFF",
-                            powerWatts = 12
-                        ),
-                        ChildSwitch(
-                            id = "switch_3",
-                            name = "Decorative Light",
-                            status = "ON",
-                            powerWatts = 10
+                            id = "light1",
+                            name = "💡 Light 1",
+                            status = if (switchMap["light1"] == true) "ON" else "OFF"
                         )
                     )
-                )
-            }
-
-            "master_bedroom_switch_board" -> {
-                childSwitches.addAll(
-                    listOf(
+                    childSwitches.add(
                         ChildSwitch(
-                            id = "switch_1",
-                            name = "Main Light",
-                            status = "ON",
-                            powerWatts = 18
-                        ),
-                        ChildSwitch(
-                            id = "switch_2",
-                            name = "Bedside Light",
-                            status = "OFF",
-                            powerWatts = 10
-                        ),
-                        ChildSwitch(
-                            id = "switch_3",
-                            name = "Dressing Light",
-                            status = "OFF",
-                            powerWatts = 12
+                            id = "fan",
+                            name = "🌀 Fan",
+                            status = if (switchMap["fan"] == true) "ON" else "OFF"
                         )
                     )
-                )
-            }
-
-            "bedroom_switch_board" -> {
-                childSwitches.addAll(
-                    listOf(
+                    childSwitches.add(
                         ChildSwitch(
-                            id = "switch_1",
-                            name = "Main Light",
-                            status = "ON",
-                            powerWatts = 18
-                        ),
-                        ChildSwitch(
-                            id = "switch_2",
-                            name = "Night Light",
-                            status = "OFF",
-                            powerWatts = 8
+                            id = "ac",
+                            name = "❄️ AC",
+                            status = if (switchMap["ac"] == true) "ON" else "OFF"
                         )
                     )
-                )
+                }
+                
+                displayChildSwitches()
+            },
+            onError = { e ->
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-
-            else -> {
-                childSwitches.addAll(
-                    listOf(
-                        ChildSwitch(
-                            id = "switch_1",
-                            name = "Switch 1",
-                            status = "OFF"
-                        ),
-                        ChildSwitch(
-                            id = "switch_2",
-                            name = "Switch 2",
-                            status = "OFF"
-                        )
-                    )
-                )
-            }
-        }
+        )
     }
 
     private fun displayChildSwitches() {
@@ -254,23 +216,22 @@ class SwitchBoardActivity : AppCompatActivity() {
             statusView = tvChildSwitchStatus
         )
 
-        switchChild.setOnCheckedChangeListener {
-                _,
-                isChecked ->
-
-            childSwitch.status =
-                if (isChecked) "ON" else "OFF"
-
-            updateChildSwitchStatus(
-                childSwitch = childSwitch,
-                statusView = tvChildSwitchStatus
+        switchChild.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (!buttonView.isPressed) return@setOnCheckedChangeListener
+            
+            val newStatus = if (isChecked) "ON" else "OFF"
+            
+            repository.updateSwitchState(
+                floorId = floorId,
+                roomId = if (boardId.startsWith("switchPanel")) "masterBedroom" else "unknown",
+                deviceId = boardId,
+                switchName = childSwitch.id,
+                state = isChecked
             )
-
-            updateSummary()
 
             Toast.makeText(
                 this,
-                "${childSwitch.name} turned ${childSwitch.status}",
+                "${childSwitch.name} turning $newStatus",
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -327,8 +288,16 @@ class SwitchBoardActivity : AppCompatActivity() {
             return
         }
 
-        childSwitches.forEach {
-            it.status = "OFF"
+        childSwitches.forEach { switch ->
+            if (switch.status == "ON") {
+                repository.updateSwitchState(
+                    floorId = floorId,
+                    roomId = if (boardId.startsWith("switchPanel")) "masterBedroom" else "unknown",
+                    deviceId = boardId,
+                    switchName = switch.id,
+                    state = false
+                )
+            }
         }
 
         displayChildSwitches()
