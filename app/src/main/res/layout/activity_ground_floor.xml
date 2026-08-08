@@ -246,6 +246,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tvLivingRoomSummary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
@@ -265,6 +266,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/llLivingRoomChips"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
                     android:layout_marginTop="22dp"
@@ -356,6 +358,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tvKitchenSummary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
@@ -375,6 +378,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/llKitchenChips"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
                     android:layout_marginTop="22dp"
@@ -466,6 +470,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tvGarageSummary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
@@ -485,6 +490,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/llGarageChips"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
                     android:layout_marginTop="22dp"

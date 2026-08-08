@@ -5,5 +5,10 @@
 
     <color name="schedule_enabled">#70E5A4</color>
     <color name="schedule_disabled">#A8B2C4</color>
+    <color name="camera_screen_background">#071329</color>
+    <color name="camera_header_background">#14243D</color>
+    <color name="camera_status_online">#70E5A4</color>
+    <color name="camera_status_disconnected">#A8B2C4</color>
+    <color name="camera_status_error">#FF9B9F</color>
 
 </resources>

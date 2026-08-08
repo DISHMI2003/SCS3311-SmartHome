@@ -14,6 +14,7 @@ class FirebaseRepository {
     private var roomListener: ListenerRegistration? = null
     private var deviceListener: ListenerRegistration? = null
     private var dashboardListener: ListenerRegistration? = null
+    private var singleDeviceListener: ListenerRegistration? = null
 
     // FLOORS
 
@@ -137,6 +138,64 @@ class FirebaseRepository {
             }
     }
 
+    // ALL FLOOR DEVICES
+    private val floorDevicesListeners = mutableMapOf<String, ListenerRegistration>()
+
+    fun listenToAllFloorDevices(
+        floorId: String,
+        onUpdate: (List<Device>) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        listenToRooms(floorId, onUpdate = { rooms ->
+            if (rooms.isEmpty()) {
+                onUpdate(emptyList())
+                return@listenToRooms
+            }
+
+            val allDevices = mutableMapOf<String, List<Device>>()
+            rooms.forEach { roomId ->
+                val listenerKey = "$floorId-$roomId"
+                if (!floorDevicesListeners.containsKey(listenerKey)) {
+                    val listener = db.collection("houses")
+                        .document("house1")
+                        .collection("floors")
+                        .document(floorId)
+                        .collection("rooms")
+                        .document(roomId)
+                        .collection("devices")
+                        .addSnapshotListener { snapshot, error ->
+                            if (error != null) {
+                                onError(error)
+                                return@addSnapshotListener
+                            }
+                            val devices = mutableListOf<Device>()
+                            snapshot?.documents?.forEach { document ->
+                                devices.add(
+                                    Device(
+                                        id = document.id,
+                                        name = document.getString("name") ?: "",
+                                        room = roomId,
+                                        type = document.getString("type") ?: "",
+                                        status = document.getString("status") ?: "OFF",
+                                        maxOnDuration = document.getLong("maxOnDuration") ?: 0,
+                                        autoOff = document.getBoolean("autoOff") ?: false
+                                    )
+                                )
+                            }
+                            allDevices[roomId] = devices
+                            onUpdate(allDevices.values.flatten())
+                        }
+                    floorDevicesListeners[listenerKey] = listener
+                }
+            }
+        }, onError = onError)
+    }
+    
+    fun isDeviceActive(status: String): Boolean {
+        val upperStatus = status.trim().uppercase(java.util.Locale.ROOT)
+        return upperStatus == "ON" || upperStatus == "ONLINE" || upperStatus == "CONNECTED"
+    }
+
     // DASHBOARD
 
     fun listenToDashboard(
@@ -251,14 +310,71 @@ class FirebaseRepository {
             .update(updates)
     }
 
+    fun listenToDevice(
+        floorId: String,
+        roomId: String,
+        deviceId: String,
+        onUpdate: (Device?) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        singleDeviceListener?.remove()
+
+        singleDeviceListener = db
+            .collection("houses")
+            .document("house1")
+            .collection("floors")
+            .document(floorId)
+            .collection("rooms")
+            .document(roomId)
+            .collection("devices")
+            .document(deviceId)
+            .addSnapshotListener { snapshot, error ->
+
+                if (error != null) {
+                    onError(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot == null || !snapshot.exists()) {
+                    onUpdate(null)
+                    return@addSnapshotListener
+                }
+
+                val device = Device(
+                    id = snapshot.id,
+                    name = snapshot.getString("name").orEmpty(),
+                    room = roomId,
+                    type = snapshot.getString("type").orEmpty(),
+                    status = snapshot.getString("status")
+                        ?: "DISCONNECTED",
+                    maxOnDuration =
+                        snapshot.getLong("maxOnDuration") ?: 0L,
+                    autoOff =
+                        snapshot.getBoolean("autoOff") ?: false
+                )
+
+                onUpdate(device)
+            }
+    }
+
     // REMOVE LISTENERS
 
     fun removeListeners() {
-
         floorListener?.remove()
         roomListener?.remove()
         deviceListener?.remove()
         dashboardListener?.remove()
         switchBoardListener?.remove()
+        singleDeviceListener?.remove()
+
+        floorListener = null
+        roomListener = null
+        deviceListener = null
+        dashboardListener = null
+        switchBoardListener = null
+        singleDeviceListener = null
+        
+        floorDevicesListeners.values.forEach { it.remove() }
+        floorDevicesListeners.clear()
     }
 }

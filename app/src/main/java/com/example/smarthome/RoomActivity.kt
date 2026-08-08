@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import com.example.smarthome.repository.FirebaseRepository
 import com.example.smarthome.model.Device
+import java.util.Locale
 
 class RoomActivity : AppCompatActivity() {
 
@@ -108,14 +109,35 @@ class RoomActivity : AppCompatActivity() {
                 devices.clear()
                 firebaseDevices.forEach { device ->
                     // Map Firebase Device to RoomDevice for UI
+                    val normalizedType = device.type
+                        .trim()
+                        .lowercase(Locale.ROOT)
+
+                    val primaryAction = when (normalizedType) {
+                        "camera" -> "View Camera"
+
+                        "switchpanel",
+                        "switch panel",
+                        "switchboard",
+                        "switch board" -> "Open Switches"
+
+                        "light" -> "Schedule"
+
+                        "iron" -> "Set Duration"
+
+                        else -> null
+                    }
+
                     devices.add(
                         RoomDevice(
                             id = device.id,
-                            name = device.name.ifEmpty { device.id },
-                            type = device.type.ifEmpty { "Unknown" },
+                            name = device.name.ifBlank {
+                                device.id
+                            },
+                            type = normalizedType,
                             status = device.status,
-                            powerWatts = 0, // Fallback
-                            primaryAction = null,
+                            powerWatts = 0,
+                            primaryAction = primaryAction,
                             secondaryAction = null
                         )
                     )
@@ -187,10 +209,12 @@ class RoomActivity : AppCompatActivity() {
                 R.id.btnDeviceSecondaryAction
             )
 
+        val currentPower = if (repository.isDeviceActive(device.status)) 12 else 0
+
         tvDeviceIcon.text = getDeviceIcon(device.type)
         tvDeviceName.text = device.name
         tvDeviceType.text = device.type
-        tvDevicePower.text = "${device.powerWatts} W"
+        tvDevicePower.text = "$currentPower W"
         tvLastUpdated.text = "Updated now"
 
         val isCamera = device.type.equals("Camera", ignoreCase = true)
@@ -359,12 +383,10 @@ class RoomActivity : AppCompatActivity() {
 
     private fun updateSummary() {
         val activeDevices = devices.count {
-            it.status == "ON"
+            repository.isDeviceActive(it.status)
         }
 
-        val activePower = devices
-            .filter { it.status == "ON" }
-            .sumOf { it.powerWatts }
+        val activePower = activeDevices * 12
 
         tvRoomDeviceCount.text = devices.size.toString()
         tvRoomActiveCount.text = activeDevices.toString()
@@ -413,27 +435,15 @@ class RoomActivity : AppCompatActivity() {
             }
 
             "Schedule" -> {
-                Toast.makeText(
-                    this,
-                    "Schedule screen will be created later",
-                    Toast.LENGTH_SHORT
-                ).show()
+                openLightSchedule(device)
             }
 
             "View Camera" -> {
-                Toast.makeText(
-                    this,
-                    "Camera screen will be created later",
-                    Toast.LENGTH_SHORT
-                ).show()
+                openCamera(device)
             }
 
             "Set Duration" -> {
-                Toast.makeText(
-                    this,
-                    "Iron safety timer screen will be created later",
-                    Toast.LENGTH_SHORT
-                ).show()
+                openIronSafetySchedule(device)
             }
 
             else -> {
@@ -444,6 +454,42 @@ class RoomActivity : AppCompatActivity() {
                 ).show()
             }
         }
+    }
+
+    private fun openCamera(
+        device: RoomDevice
+    ) {
+        val intent = Intent(
+            this,
+            CameraActivity::class.java
+        )
+
+        intent.putExtra(
+            CameraActivity.EXTRA_FLOOR_ID,
+            floorId
+        )
+
+        intent.putExtra(
+            CameraActivity.EXTRA_ROOM_ID,
+            roomId
+        )
+
+        intent.putExtra(
+            CameraActivity.EXTRA_ROOM_NAME,
+            roomName
+        )
+
+        intent.putExtra(
+            CameraActivity.EXTRA_CAMERA_ID,
+            device.id
+        )
+
+        intent.putExtra(
+            CameraActivity.EXTRA_CAMERA_NAME,
+            device.name
+        )
+
+        startActivity(intent)
     }
 
     private fun openSwitchBoard(device: RoomDevice) {
@@ -475,15 +521,23 @@ class RoomActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun getDeviceIcon(type: String): String {
-        return when (type) {
-            "Light" -> "L"
-            "Fan" -> "F"
-            "Outlet" -> "P"
-            "Iron" -> "I"
-            "Camera" -> "C"
-            "Switch Board" -> "S"
-            "Door Switch" -> "D"
+    private fun getDeviceIcon(
+        type: String
+    ): String {
+        return when (
+            type.trim().lowercase(Locale.ROOT)
+        ) {
+            "light" -> "L"
+            "fan" -> "F"
+            "outlet" -> "P"
+            "iron" -> "I"
+            "camera" -> "C"
+
+            "switchpanel",
+            "switch panel",
+            "switchboard",
+            "switch board" -> "S"
+
             else -> "?"
         }
     }
