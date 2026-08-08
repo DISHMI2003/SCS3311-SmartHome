@@ -27,9 +27,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvNotification: TextView
     private lateinit var tvNotificationCount: TextView
 
+    private lateinit var tvProfileImage: TextView
+    private lateinit var tvGroundActiveDevices: TextView
+    private lateinit var tvFirstActiveDevices: TextView
+
     private lateinit var cardGroundFloor: LinearLayout
     private lateinit var cardFirstFloor: LinearLayout
     private lateinit var cardAlertSummary: LinearLayout
+    private lateinit var cardEnergyUsage: LinearLayout
 
     private lateinit var btnReports: Button
     private lateinit var btnLogout: Button
@@ -116,10 +121,14 @@ class MainActivity : AppCompatActivity() {
         tvEnergyUsage = findViewById(R.id.tvEnergyUsage)
         tvNotification = findViewById(R.id.tvNotification)
         tvNotificationCount = findViewById(R.id.tvNotificationCount)
+        tvProfileImage = findViewById(R.id.tvProfileImage)
+        tvGroundActiveDevices = findViewById(R.id.tvGroundActiveDevices)
+        tvFirstActiveDevices = findViewById(R.id.tvFirstActiveDevices)
 
         cardGroundFloor = findViewById(R.id.cardGroundFloor)
         cardFirstFloor = findViewById(R.id.cardFirstFloor)
         cardAlertSummary = findViewById(R.id.cardAlertSummary)
+        cardEnergyUsage = findViewById(R.id.cardEnergyUsage)
 
         btnReports = findViewById(R.id.btnReports)
         btnLogout = findViewById(R.id.btnLogout)
@@ -131,45 +140,65 @@ class MainActivity : AppCompatActivity() {
 
     }
     private fun loadTemporaryDashboardData() {
-
-        tvGreeting.text = "Hello"
+        // Basic load defaults
         tvDevicesOn.text = "0"
         tvOnlineDevices.text = "0"
         tvAlerts.text = "0"
         tvEnergyUsage.text = "0.0"
         tvNotificationCount.text = "0"
+        
+        // Profile Greeting
+        val user = FirebaseAuth.getInstance().currentUser
+        val displayName = user?.displayName ?: user?.email?.substringBefore("@") ?: "User"
+        tvGreeting.text = "Hello, $displayName"
+        if (displayName.isNotEmpty()) {
+            tvProfileImage.text = displayName.first().uppercase()
+        }
 
     }
+    private var groundFloorDevices: List<com.example.smarthome.model.Device> = emptyList()
+    private var firstFloorDevices: List<com.example.smarthome.model.Device> = emptyList()
+
+    private fun updateGlobalDashboard() {
+        val allDevices = groundFloorDevices + firstFloorDevices
+        val devicesOn = allDevices.count { it.status == "ON" }
+        val onlineDevices = allDevices.count { it.status == "ONLINE" || it.status == "CONNECTED" }
+        val activeCount = allDevices.count { repository.isDeviceActive(it.status) }
+        
+        tvDevicesOn.text = devicesOn.toString()
+        tvOnlineDevices.text = onlineDevices.toString()
+        tvEnergyUsage.text = "${String.format(java.util.Locale.US, "%.1f", activeCount * 12.4)}"
+        
+        // Alerts can remain static for now since no alerts logic exists
+        tvAlerts.text = if (activeCount > 5) "1" else "0"
+    }
+
     private fun loadDashboard() {
-
-        repository.listenToDashboard(
-
-            onUpdate = { dashboard ->
-
-                tvDevicesOn.text =
-                    dashboard.devicesOn.toString()
-
-                tvOnlineDevices.text =
-                    dashboard.onlineDevices.toString()
-
-                tvAlerts.text =
-                    dashboard.alerts.toString()
-
-                tvEnergyUsage.text =
-                    "${dashboard.energyUsage} kWh"
-
+        
+        repository.listenToAllFloorDevices(
+            floorId = "groundFloor",
+            onUpdate = { devices ->
+                groundFloorDevices = devices
+                val activeCount = devices.count { repository.isDeviceActive(it.status) }
+                tvGroundActiveDevices.text = "$activeCount active devices"
+                updateGlobalDashboard()
             },
-
-            onError = { exception ->
-
-                Toast.makeText(
-                    this,
-                    exception.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-
+            onError = {
+                tvGroundActiveDevices.text = "0 active devices"
             }
-
+        )
+        
+        repository.listenToAllFloorDevices(
+            floorId = "firstFloor",
+            onUpdate = { devices ->
+                firstFloorDevices = devices
+                val activeCount = devices.count { repository.isDeviceActive(it.status) }
+                tvFirstActiveDevices.text = "$activeCount active devices"
+                updateGlobalDashboard()
+            },
+            onError = {
+                tvFirstActiveDevices.text = "0 active devices"
+            }
         )
 
     }
@@ -182,15 +211,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         cardFirstFloor.setOnClickListener {
-
             openFirstFloor()
-
         }
 
         cardAlertSummary.setOnClickListener {
-
             showMessage("Alerts screen will be created later")
-
+        }
+        
+        cardEnergyUsage.setOnClickListener {
+            startActivity(Intent(this, ReportsActivity::class.java))
         }
 
         tvNotification.setOnClickListener {
@@ -206,9 +235,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnReports.setOnClickListener {
-
-            showMessage("Reports screen will be created later")
-
+            startActivity(Intent(this, ReportsActivity::class.java))
         }
 
         btnLogout.setOnClickListener {

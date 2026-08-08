@@ -134,83 +134,22 @@
 'livingRoomLightStatus',
 'ON'
 )">
-ON
-</button>
+                            ON
+                        </button>
 
 
-<button class="off-btn" onclick="updateDevice(
+                        <button class="off-btn" onclick="updateDevice(
 'livingRoomLight',
 'livingRoomLightStatus',
 'OFF'
 )">
-OFF
-</button> 
-
-                    </div>
-
-
-                </div>
-
-
-
-
-
-                <!-- tvOutlet -->
-
-
-                <div class="device-card">
-
-
-                    <i class="fa-solid fa-plug device-icon"></i>
-
-
-                    <h4>
-                        TV Outlet
-                    </h4>
-
-
-
-                    <span class="status off" id="tvOutletStatus">
-
-                        OFF
-
-                    </span>
-
-
-
-                    <div class="buttons">
-
-
-                        <button onclick="updateDevice(
-'tvOutlet',
-'tvOutletStatus',
-'ON'
-)">
-
-                            ON
-
-                        </button>
-
-
-
-                        <button class="off-btn" onclick="updateDevice(
-'tvOutlet',
-'tvOutletStatus',
-'OFF'
-)">
-
                             OFF
-
                         </button>
-
 
                     </div>
 
 
                 </div>
-
-
-
 
 
                 <!-- securityCamera -->
@@ -227,47 +166,130 @@ OFF
                     </h4>
 
 
-<span class="status on" id="securityCameraStatus">
-ONLINE
-</span>
+                    <span class="status on" id="securityCameraStatus">
+                        ONLINE
+                    </span>
 
 
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZCsKD_lzijHz-QnDeHyDC33PiyZnC9Os1PAdoITkGPw&s=10" class="camera-image">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZCsKD_lzijHz-QnDeHyDC33PiyZnC9Os1PAdoITkGPw&s=10"
+                        class="camera-image">
 
-<div>
-    <button onclick="updateDevice(
+                    <div>
+                        <button onclick="updateDevice(
 'securityCamera',
 'securityCameraStatus',
 'ONLINE'
 )">
-ONLINE
-</button>
+                            ONLINE
+                        </button>
 
 
 
 
-<button onclick="updateDevice(
+                        <button class="off-btn" onclick="updateDevice(
 'securityCamera',
 'securityCameraStatus',
 'DISCONNECTED'
 )">
-OFFLINE
-</button>
-</div>
+                            OFFLINE
+                        </button>
+                    </div>
 
                 </div>
 
 
 
 
+
+
+
+
+
+
+
+                <!-- tvOutlet -->
+
+
+
+
+                <div class="device-card">
+
+
+
+
+                    <i class="fa-solid fa-plug device-icon"></i>
+
+
+
+
+                    <h4>
+                        TV Outlet
+                    </h4>
+
+
+
+
+
+
+                    <span class="status off" id="tvOutletStatus">
+
+
+                        OFF
+
+
+                    </span>
+
+
+
+
+
+
+                    <div class="buttons">
+
+
+
+
+                        <button onclick="updateDevice(
+'tvOutlet',
+'tvOutletStatus',
+'ON'
+)">
+
+
+                            ON
+
+
+                        </button>
+
+
+
+
+
+
+                        <button class="off-btn" onclick="updateDevice(
+'tvOutlet',
+'tvOutletStatus',
+'OFF'
+)">
+
+
+                            OFF
+
+
+                        </button>
+
+
+
+
+                    </div>
+
+
+
+
+                </div>
+
             </div>
-
-
         </div>
-
-
-
-
 
 
         <!-- ========================= -->
@@ -289,67 +311,6 @@ OFFLINE
 
 
             <div class="device-grid">
-
-
-
-
-
-                <!-- kitchenLight -->
-
-
-                <div class="device-card">
-
-
-                    <i class="fa-solid fa-lightbulb device-icon"></i>
-
-
-                    <h4>
-                        Kitchen Light
-                    </h4>
-
-
-                    <span class="status off" id="kitchenLightStatus">
-
-                        OFF
-
-                    </span>
-
-
-
-                    <div class="buttons">
-
-
-                        <button onclick="updateDevice(
-'kitchenLight',
-'kitchenLightStatus',
-'ON'
-)">
-
-                            ON
-
-                        </button>
-
-
-                        <button class="off-btn" onclick="updateDevice(
-'kitchenLight',
-'kitchenLightStatus',
-'OFF'
-)">
-
-                            OFF
-
-                        </button>
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-
 
                 <!-- kitchenIron -->
 
@@ -409,6 +370,85 @@ OFFLINE
 
 
 
+                <!-- kitchenLight -->
+
+
+
+
+                <div class="device-card">
+
+
+
+
+                    <i class="fa-solid fa-lightbulb device-icon"></i>
+
+
+
+
+                    <h4>
+                        Kitchen Light
+                    </h4>
+
+
+
+
+                    <span class="status off" id="kitchenLightStatus">
+
+
+                        OFF
+
+
+                    </span>
+
+
+
+
+
+
+                    <div class="buttons">
+
+
+
+
+                        <button onclick="updateDevice(
+'kitchenLight',
+'kitchenLightStatus',
+'ON'
+)">
+
+
+                            ON
+
+
+                        </button>
+
+
+
+
+                        <button class="off-btn" onclick="updateDevice(
+'kitchenLight',
+'kitchenLightStatus',
+'OFF'
+)">
+
+
+                            OFF
+
+
+                        </button>
+
+
+
+
+                    </div>
+
+
+
+
+
+
+                </div>
+
 
             </div>
 
@@ -441,43 +481,43 @@ houses
             <div class="device-grid">
 
 
-                <!-- Garage Light -->
-
-                <div class="device-card">
-
-                    <i class="fa-solid fa-lightbulb device-icon"></i>
-
-                    <h4>Garage Light</h4>
 
 
-                    <span class="status off" id="garageLightStatus">
-                        OFF
-                    </span>
 
 
-                    <div class="buttons">
-
-                        <button onclick="updateDevice(
-                    'garageLight',
-                    'garageLightStatus',
-                    'ON'
-                )">
-                            ON
-                        </button>
 
 
-                        <button class="off-btn" onclick="updateDevice(
-                    'garageLight',
-                    'garageLightStatus',
-                    'OFF'
-                )">
-                            OFF
-                        </button>
 
 
-                    </div>
 
-                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -497,36 +537,59 @@ houses
                     </span>
 
 
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8ctoaglCg0STzvw1bR3W1z2ufgLbVxJFvD-j0N5oPgg&s=10" class="camera-image">
-    <div class="buttons">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8ctoaglCg0STzvw1bR3W1z2ufgLbVxJFvD-j0N5oPgg&s=10"
+                        class="camera-image">
+                    <div class="buttons">
 
-        <button onclick="updateDevice(
+                        <button onclick="updateDevice(
         'garageCamera',
         'garageCameraStatus',
         'ONLINE'
         )">
-            ONLINE
-        </button>
+                            ONLINE
+                        </button>
 
 
-        <button class="off-btn"
-        onclick="updateDevice(
+                        <button class="off-btn" onclick="updateDevice(
         'garageCamera',
         'garageCameraStatus',
         'DISCONNECTED'
         )">
-            OFFLINE
-        </button>
+                            OFFLINE
+                        </button>
 
-    </div>
-
-</div>
+                    </div>
 
                 </div>
-
-
-
+                <!-- Garage Light -->
+                <div class="device-card">
+                    <i class="fa-solid fa-lightbulb device-icon"></i>
+                    <h4>Garage Light</h4>
+                    <span class="status off" id="garageLightStatus">
+                        OFF
+                    </span>
+                    <div class="buttons">
+                        <button onclick="updateDevice(
+                   'garageLight',
+                   'garageLightStatus',
+                   'ON'
+               )">
+                            ON
+                        </button>
+                        <button class="off-btn" onclick="updateDevice(
+                   'garageLight',
+                   'garageLightStatus',
+                   'OFF'
+               )">
+                            OFF
+                        </button>
+                    </div>
+                </div>
             </div>
+
+
+
+        </div>
 
 
         </div>
@@ -987,27 +1050,27 @@ this.checked
 
     </section>
 
-<footer>
+    <footer>
 
-Smart Home Monitoring & Control System<br>
-SCS3311 Mini Project<br>
-Hardware Simulator
+        Smart Home Monitoring & Control System<br>
+        SCS3311 Mini Project<br>
+        Hardware Simulator
 
-</footer>
+    </footer>
 
 
-<!-- Firebase -->
+    <!-- Firebase -->
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
- 
-<!-- Project JS -->
 
-<script src="firebase.js"></script>
+    <!-- Project JS -->
 
-<script src="script.js"></script>
+    <script src="firebase.js"></script>
+
+    <script src="script.js"></script>
 
 
 </body>
