@@ -138,6 +138,43 @@ class FirebaseRepository {
             }
     }
 
+    fun getDevice(
+        floorId: String,
+        roomId: String,
+        deviceId: String,
+        onSuccess: (Device) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        db.collection("houses")
+            .document("house1")
+            .collection("floors")
+            .document(floorId)
+            .collection("rooms")
+            .document(roomId)
+            .collection("devices")
+            .document(deviceId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val device = Device(
+                        id = document.id,
+                        name = document.getString("name") ?: "",
+                        room = roomId,
+                        type = document.getString("type") ?: "",
+                        status = document.getString("status") ?: "OFF",
+                        maxOnDuration = document.getLong("maxOnDuration") ?: 0,
+                        autoOff = document.getBoolean("autoOff") ?: false
+                    )
+                    onSuccess(device)
+                } else {
+                    onError(Exception("Device not found"))
+                }
+            }
+            .addOnFailureListener { e ->
+                onError(e)
+            }
+    }
+
     // ALL FLOOR DEVICES
     private val floorDevicesListeners = mutableMapOf<String, ListenerRegistration>()
 
@@ -245,6 +282,23 @@ class FirebaseRepository {
             .collection("devices")
             .document(deviceId)
             .update("status", status)
+    }
+
+    fun updateDeviceProperties(
+        floorId: String,
+        roomId: String,
+        deviceId: String,
+        properties: Map<String, Any>
+    ) {
+        db.collection("houses")
+            .document("house1")
+            .collection("floors")
+            .document(floorId)
+            .collection("rooms")
+            .document(roomId)
+            .collection("devices")
+            .document(deviceId)
+            .update(properties)
     }
 
     // SWITCH BOARD

@@ -34,6 +34,10 @@ const DEVICE_PATHS = {
     bathroomLight: ["firstFloor", "bathroom"]
 
 };
+
+// Global cache for device configurations (used for schedules)
+window.globalDeviceConfigs = {};
+
 // Wait until page loads
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -97,11 +101,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
         switchPanelStatus:
             "switchPanel1"
-
-
     };
 
+    // ==================================================
+    // Schedule Checker (Runs every minute)
+    // ==================================================
+    setInterval(() => {
+        const now = new Date();
+        const currentTime = now.getHours().toString().padStart(2, '0') + ":" + 
+                            now.getMinutes().toString().padStart(2, '0');
 
+        for (const [path, data] of Object.entries(window.globalDeviceConfigs)) {
+            if (data.scheduleEnabled) {
+                const pathParts = path.split('/');
+                const deviceID = pathParts[pathParts.length - 1];
+                
+                let htmlID = "";
+                for (const [key, val] of Object.entries(devices)) {
+                    if (val === deviceID) { htmlID = key; break; }
+                }
+
+                if (data.scheduleOnTime === currentTime && data.status !== "ON") {
+                    console.log(`Schedule triggered: Turning ON ${deviceID}`);
+                    window.updateDevice(deviceID, htmlID, 'ON');
+                } else if (data.scheduleOffTime === currentTime && data.status !== "OFF") {
+                    console.log(`Schedule triggered: Turning OFF ${deviceID}`);
+                    window.updateDevice(deviceID, htmlID, 'OFF');
+                }
+            }
+        }
+    }, 60000); // Check every 60 seconds
 
 
 
@@ -457,43 +486,11 @@ await deviceRef.set(
 
     window.ironControl =
         function (status) {
-
-
             updateDevice(
                 "kitchenIron",
                 "ironStatus",
                 status
             );
-
-
-
-            if (status === "ON") {
-
-
-                setTimeout(() => {
-
-
-                    updateDevice(
-                        "kitchenIron",
-                        "ironStatus",
-                        "OFF"
-                    );
-
-
-
-                    alert(
-                        "⚠️ Kitchen Iron automatically turned OFF after 2 minutes"
-                    );
-
-
-
-                }, 120000);
-
-
-
-            }
-
-
         };
 
 
@@ -565,18 +562,17 @@ await deviceRef.set(
 function listenDevice(path, statusId) {
 
     db.doc(path).onSnapshot((doc) => {
-
         if (doc.exists) {
-
-            let status = doc.data().status;
+            let data = doc.data();
+            let status = data.status;
+            
+            // Cache data for schedules
+            window.globalDeviceConfigs[path] = data;
 
             let element = document.getElementById(statusId);
 
-
             if (element) {
-
                 element.innerHTML = status;
-
 
                 element.classList.remove(
                     "on",
@@ -601,7 +597,26 @@ function listenDevice(path, statusId) {
                 else if (status === "ERROR") {
                     element.classList.add("error");
                 }
-
+            }
+            
+            // ==========================================
+            // Iron Safety Watcher
+            // ==========================================
+            if (statusId === "ironStatus") {
+                if (status === "ON" && data.safetyEnabled === true) {
+                    if (window.ironSafetyTimer) clearTimeout(window.ironSafetyTimer);
+                    
+                    const maxDuration = data.maxOnDuration || 1; // Default to 1 min if not set
+                    
+                    window.ironSafetyTimer = setTimeout(() => {
+                        window.updateDevice("kitchenIron", "ironStatus", "OFF");
+                        console.log(`Iron safety triggered: Automatically turned OFF after ${maxDuration} minutes`);
+                        alert(`⚠️ Kitchen Iron automatically turned OFF after ${maxDuration} minute(s)`);
+                    }, maxDuration * 60 * 1000);
+                    
+                } else if (status === "OFF") {
+                    if (window.ironSafetyTimer) clearTimeout(window.ironSafetyTimer);
+                }
             }
 
         }
