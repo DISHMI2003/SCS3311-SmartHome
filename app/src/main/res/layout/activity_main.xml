@@ -185,10 +185,14 @@
                 <!-- Energy Usage Card -->
 
                 <LinearLayout
+                    android:id="@+id/cardEnergyUsage"
                     android:layout_width="match_parent"
                     android:layout_height="290dp"
                     android:layout_marginTop="28dp"
                     android:background="@drawable/dashboard_large_card_background"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
                     android:orientation="vertical"
                     android:paddingStart="24dp"
                     android:paddingTop="24dp"
@@ -841,6 +845,7 @@
         android:layout_height="82dp"
         android:background="@drawable/bottom_navigation_background"
         android:gravity="center"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
