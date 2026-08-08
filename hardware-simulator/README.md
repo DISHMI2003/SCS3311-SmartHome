@@ -6,105 +6,95 @@
 
 ---
 
-## My Contribution
+# 1. My Contribution
 
-I developed and integrated the **Smart Home Hardware Simulator** and contributed to the Android application's dynamic device monitoring, camera functionality, reports, and Firebase-based automation.
+### Hardware Simulator
 
-### Main work completed
+1. Developed the Smart Home Hardware Simulator using **HTML, CSS, and JavaScript**.
+2. Created the simulator dashboard for both **Ground Floor and First Floor**.
+3. Implemented ON/OFF controls for smart devices.
+4. Implemented the **3-Switch Panel** with Light, Fan, and AC controls.
+5. Added **camera monitoring simulation** for the Living Room and Garage.
+6. Added mock camera images and camera status interfaces.
+7. Connected the Hardware Simulator to **Firebase Firestore**.
+8. Implemented real-time device status synchronization with Firebase.
+9. Fixed Firestore device paths and document IDs to match the project database.
 
-1. Developed the web-based Hardware Simulator using **HTML, CSS, and JavaScript**.
-2. Connected the Hardware Simulator to **Firebase Firestore**.
-3. Implemented real-time device status synchronization between the simulator and Firebase.
-4. Added ON/OFF controls for smart home devices.
-5. Implemented the **Multi-Switch Panel** simulation.
-6. Added **Camera Monitoring Simulation** for:
+### Iron Safety
 
-   * Living Room Security Camera
-   * Garage Camera
-7. Added camera status and monitoring UI to the Android application.
-8. Implemented **Iron Safety Auto Shutdown** logic.
-9. Added Firebase-based **Iron Safety configuration**:
+10. Implemented **Kitchen Iron safety automation**.
+11. Added `safetyEnabled` configuration.
+12. Added `maxOnDuration` configuration.
+13. Implemented automatic Iron OFF after the configured duration.
+14. Added logic to cancel the safety timer when the Iron is manually switched OFF.
+15. Prepared a Firebase **Cloud Function** for server-side Iron safety.
+16. Tested the Cloud Function code with ESLint.
+17. Prepared the Cloud Function for deployment.
 
-   * `safetyEnabled`
-   * `maxOnDuration`
-10. Implemented **Light Scheduling** support:
+### Light Scheduling
 
-    * `scheduleEnabled`
-    * `scheduleOnTime`
-    * `scheduleOffTime`
-11. Implemented automatic light scheduling in the Hardware Simulator.
-12. Updated Android scheduling functionality so schedule settings are stored in **Firebase Firestore** instead of only local storage.
-13. Updated Firebase repository functionality to read and write scheduling and safety settings.
-14. Added dynamic **Active Device** counting for Ground Floor and First Floor.
-15. Added support for treating `ON`, `ONLINE`, and `CONNECTED` devices as active.
-16. Added dynamic room device and active-device information to the floor screens.
-17. Added a **Reports Activity** and dynamic device/energy information.
-18. Restored the **Recent Activity** section on the dashboard.
-19. Added dynamic room power information based on active devices.
-20. Added Android camera screens and camera mock images.
-21. Added Firebase real-time listeners for device changes.
-22. Tested the project using Android Studio, Firebase, and the Hardware Simulator.
-23. Configured and prepared **Firebase Cloud Functions** for server-side automation.
-24. Created and maintained documentation for the Hardware Simulator.
+18. Implemented Firebase-based **light scheduling**.
+19. Added `scheduleEnabled`.
+20. Added `scheduleOnTime`.
+21. Added `scheduleOffTime`.
+22. Implemented automatic ON/OFF based on the configured schedule.
+23. Connected Android scheduling settings with Firebase so the Simulator can use them.
 
----
+### Android Application
 
-# Hardware Simulator Features
+24. Updated the Android **Dashboard** with dynamic Firebase values.
+25. Added dynamic Ground Floor active-device count.
+26. Added dynamic First Floor active-device count.
+27. Updated Ground Floor room/device counts.
+28. Updated First Floor room/device counts.
+29. Added real-time active-device detection using `ON`, `ONLINE`, and `CONNECTED`.
+30. Updated `FirebaseRepository` with floor-wide device listeners.
+31. Restored the **Recent Activity** section.
+32. Created the **Reports Activity**.
+33. Added dynamic device information to Reports.
+34. Added simulated total house energy usage.
+35. Added simulated energy usage per device.
+36. Updated Room Power so it dynamically changes according to active devices.
+37. Added Android **Camera Activity**.
+38. Added Living Room and Garage camera mock interfaces.
+39. Updated scheduling functionality to save configuration to Firebase instead of only local storage.
 
-## 1. Smart Device Dashboard
+### Firebase / Cloud / GitHub
 
-The Hardware Simulator provides a web-based dashboard for monitoring and controlling smart home devices.
-
-Users can:
-
-* View device status
-* Turn devices ON
-* Turn devices OFF
-* Monitor real-time changes
-* Interact with simulated smart home hardware
-
----
-
-## 2. Firebase Firestore Integration
-
-The simulator is connected to **Firebase Firestore**.
-
-Device status changes are synchronized with Firebase in real time.
-
-### Example
-
-```text
-Simulator
-    ↓
-Firebase Firestore
-    ↓
-Android Application
-```
-
-and:
-
-```text
-Android Application
-    ↓
-Firebase Firestore
-    ↓
-Hardware Simulator
-```
-
-This allows the Android application and Hardware Simulator to share the same device state.
+40. Configured Firebase CLI.
+41. Initialized Firebase Cloud Functions.
+42. Connected the project to the correct Firebase project.
+43. Tested Firebase Firestore communication.
+44. Created and maintained Git branches for my work.
+45. Committed and pushed my Hardware Simulator changes.
+46. Created the `safiya-App-update` branch for Android updates.
+47. Committed and pushed my Android application updates.
+48. Updated the Hardware Simulator README/documentation.
+49. Tested the Android application after the latest changes using a successful build/compile.
 
 ---
 
-# 3. Device ON/OFF Control
+# 2. Clear Explanation of My Work
 
-The simulator supports ON/OFF control for the smart home devices.
+## 2.1 Hardware Simulator
 
-The following devices are simulated:
+My main responsibility was developing the **Smart Home Hardware Simulator**.
+
+I created a web-based simulator using:
+
+* HTML
+* CSS
+* JavaScript
+* Firebase Firestore
+
+The simulator represents the physical devices in the smart home. Users can turn devices ON and OFF, and the status is synchronized with Firebase.
+
+The simulator contains devices from both floors.
 
 ### Ground Floor
 
 * Living Room Light
-* TV Power Outlet
+* TV Outlet
 * Security Camera
 * Kitchen Light
 * Kitchen Iron
@@ -114,101 +104,244 @@ The following devices are simulated:
 ### First Floor
 
 * Master Bedroom Light
-* Multi-Switch Panel
+* 3-Switch Panel
 * Bedroom Light
 * Bedroom Outlet
 * Bathroom Light
+
+The simulator communicates with the same Firestore database used by the Android application.
+
+```text
+Android App
+     ↓
+Firebase Firestore
+     ↑
+Hardware Simulator
+```
+
+When a device status changes, the change can be reflected between the systems.
+
+---
+
+# 3. Device Control
+
+I implemented ON/OFF controls for the smart home devices.
+
+For example:
+
+```text
+Living Room Light
+       ↓
+      ON
+       ↓
+Firebase Firestore
+```
+
+If the user switches it OFF:
+
+```text
+Living Room Light
+       ↓
+      OFF
+       ↓
+Firebase Firestore
+```
+
+I tested these controls with the different devices in the simulator.
 
 ---
 
 # 4. Multi-Switch Panel
 
-The Master Bedroom contains a simulated multi-switch unit.
+I implemented the **3-Switch Panel** separately because it contains multiple switches.
 
-The panel supports:
+It supports:
 
-* Light
-* Fan
-* AC
+```text
+Switch Panel
+├── Light
+├── Fan
+└── AC
+```
 
 Each switch can be controlled independently.
 
-Example:
+For example:
 
 ```text
-Multi-Switch Panel
-
-Light   → ON/OFF
-Fan     → ON/OFF
-AC      → ON/OFF
+Light → ON
+Fan   → OFF
+AC    → ON
 ```
 
-The switch states are synchronized with Firebase.
+The states are also synchronized through Firebase.
 
 ---
 
-# 5. Camera Monitoring Simulation
+# 5. Camera Simulation
 
-The system includes simulated security cameras.
+I implemented camera simulation for the smart home security system.
 
-### Cameras
+The project includes:
 
 * Living Room Security Camera
 * Garage Camera
 
-The Android application includes camera monitoring screens with simulated camera previews.
+I created camera interfaces and mock camera images because this is a software/hardware simulation rather than a real physical camera.
 
-The simulator provides camera status information, while the Android application provides the camera monitoring interface.
+I also added camera status handling so that camera states such as `ONLINE` can be recognized by the system.
+
+The Android application also contains a `CameraActivity` for displaying camera information.
 
 ---
 
-# 6. Iron Safety Automation
+# 6. Firebase Firestore Integration
 
-The Kitchen Iron is treated as a **safety-critical device**.
+I connected the Hardware Simulator to **Firebase Firestore**.
 
-The simulator monitors the iron's Firebase status.
-
-When the iron is switched ON:
+The simulator uses the project's hierarchical database structure:
 
 ```text
-Iron ON
-   ↓
-Check safetyEnabled
-   ↓
-Start safety timer
-   ↓
-maxOnDuration reached
-   ↓
-Automatically turn OFF
-   ↓
-Update Firebase
+House
+ ↓
+Floor
+ ↓
+Room
+ ↓
+Device
 ```
 
-If the iron is manually switched OFF before the timer finishes, the safety timer is cancelled.
+For example:
 
-### Firebase Configuration
+```text
+houses
+└── house1
+    └── floors
+        └── groundFloor
+            └── rooms
+                └── kitchen
+                    └── devices
+                        └── kitchenIron
+```
 
-The Kitchen Iron supports:
+Each device stores information such as:
+
+```text
+name
+type
+status
+```
+
+The simulator uses these documents to control the devices.
+
+---
+
+# 7. Real-Time Device Synchronization
+
+The Hardware Simulator listens for changes in Firebase Firestore.
+
+For example:
+
+```text
+Android Application
+        ↓
+Change device status
+        ↓
+Firebase Firestore
+        ↓
+Hardware Simulator
+        ↓
+Device status updated
+```
+
+The same process works in the opposite direction:
+
+```text
+Hardware Simulator
+        ↓
+Change device status
+        ↓
+Firebase Firestore
+        ↓
+Android Application
+        ↓
+UI updated
+```
+
+This provides real-time communication between the simulated hardware and mobile application.
+
+---
+
+# 8. Iron Safety Automation
+
+The Kitchen Iron is a **safety-critical device**, so I implemented automatic safety control.
+
+The Iron uses:
 
 ```text
 safetyEnabled
 maxOnDuration
 ```
 
-Example:
+For example:
 
 ```text
 safetyEnabled = true
 maxOnDuration = 15
 ```
 
-`maxOnDuration` represents the maximum allowed ON duration in minutes.
+When the Iron is turned ON:
+
+```text
+Iron ON
+   ↓
+Check safetyEnabled
+   ↓
+Start timer
+   ↓
+15 minutes
+   ↓
+Automatically OFF
+```
+
+If the user manually turns the Iron OFF before the timer finishes:
+
+```text
+Iron OFF
+   ↓
+Cancel timer
+```
+
+This prevents the Iron from remaining ON accidentally.
 
 ---
 
-# 7. Light Scheduling
+# 9. Firebase Cloud Function
 
-The simulator supports automatic scheduling for lights.
+I also prepared the **Cloud Function** for the Iron safety feature.
+
+The purpose is to move safety automation toward the cloud/server side rather than depending only on the browser being open.
+
+I:
+
+* Initialized Firebase Functions.
+* Created the Functions project.
+* Implemented the safety logic.
+* Fixed ESLint errors.
+* Successfully passed `npm run lint`.
+* Prepared the function for deployment.
+
+The final deployment was blocked because Firebase requires the project to use the **Blaze plan** to enable the required Cloud Build API.
+
+Therefore:
+
+> **Cloud Function implemented and deployment prepared; production deployment requires Firebase Blaze plan activation.**
+
+---
+
+# 10. Light Scheduling
+
+I implemented scheduling support for lights.
 
 Firebase stores:
 
@@ -218,7 +351,7 @@ scheduleOnTime
 scheduleOffTime
 ```
 
-Example:
+For example:
 
 ```text
 scheduleEnabled = true
@@ -228,58 +361,47 @@ scheduleOffTime = 22:00
 
 The simulator checks the current time periodically.
 
-### Automatic Schedule
+At 18:00:
 
 ```text
-18:00
-  ↓
-Light automatically ON
-
-22:00
-  ↓
-Light automatically OFF
+Light → ON
 ```
 
-This allows the simulator to behave like an automated smart home system.
+At 22:00:
+
+```text
+Light → OFF
+```
+
+This allows the Android application and Hardware Simulator to share the same scheduling configuration through Firebase.
 
 ---
 
-# 8. Real-Time Firebase Listeners
+# 11. Android Dashboard Updates
 
-The simulator listens for changes in Firestore.
+I also contributed to the Android application.
+
+I updated the Dashboard so that information is no longer completely static.
+
+The Dashboard can calculate active devices dynamically from Firebase.
 
 For example:
 
 ```text
-Android changes Living Room Light
-            ↓
-       Firebase
-            ↓
-Simulator receives change
-            ↓
-Living Room Light becomes ON
+Ground Floor
+Active Devices: 3
 ```
 
-The simulator also updates Firebase when a device is controlled from the web interface.
+and:
 
----
+```text
+First Floor
+Active Devices: 2
+```
 
-# Android Application Contributions
+These values can change when device statuses change.
 
-In addition to the Hardware Simulator, I contributed to the Android application's functionality.
-
-## 9. Dynamic Dashboard
-
-The dashboard now retrieves information dynamically from Firebase.
-
-It displays:
-
-* User profile information
-* User greeting
-* Ground Floor active devices
-* First Floor active devices
-
-Active devices include devices with statuses:
+I also updated active-device detection to recognize:
 
 ```text
 ON
@@ -287,115 +409,139 @@ ONLINE
 CONNECTED
 ```
 
+This was especially useful for cameras because a camera can be `ONLINE` rather than `ON`.
+
 ---
 
-# 10. Dynamic Floor Information
+# 12. Ground Floor and First Floor Updates
 
-Ground Floor and First Floor screens now retrieve device information from Firebase.
+I updated both floor screens.
 
 The application dynamically calculates:
 
 * Number of rooms
-* Total devices
-* Active devices
+* Number of devices
+* Number of active devices
 * Devices in each room
-* Currently active devices in each room
-
-Example:
-
-```text
-Living Room
-5 devices • 2 currently ON
-```
-
-The values are updated based on Firebase data instead of static text.
-
----
-
-# 11. Dynamic Room Power
-
-The Room screen now calculates simulated power consumption based on active devices.
+* Currently active devices
 
 For example:
 
 ```text
-Device ON
-   ↓
-Active device detected
-   ↓
-Simulated power consumption
-   ↓
-12 W per active device
+Living Room
+3 devices • 2 currently ON
 ```
 
-Therefore, the displayed power value changes dynamically according to the current device status.
+Instead of hard-coded values, the information comes from Firebase.
 
 ---
 
-# 12. Reports
+# 13. Firebase Repository
 
-A Reports Activity was added to the Android application.
+I updated `FirebaseRepository.kt`.
 
-The Reports screen retrieves device information from both floors and provides:
+I added functionality for listening to devices across a complete floor.
 
-* Device status information
+This allows the application to receive real-time Firestore changes.
+
+The general flow is:
+
+```text
+Firestore
+   ↓
+FirebaseRepository
+   ↓
+Android Activity
+   ↓
+UI
+```
+
+This makes the Dashboard and floor information more dynamic.
+
+---
+
+# 14. Recent Activity
+
+I restored the **Recent Activity** section on the Dashboard.
+
+The purpose is to give the user a quick view of recent smart-home activity rather than showing only the current device state.
+
+---
+
+# 15. Reports
+
+I created `ReportsActivity`.
+
+The Reports page provides information about devices across both floors.
+
+It includes:
+
+* Device information
+* Device status
 * Total simulated energy usage
-* Per-device simulated energy usage
-* Device information from the entire house
+* Simulated energy usage per device
 
-The report is based on the current Firebase device data.
-
----
-
-# 13. Recent Activity
-
-The **Recent Activity** section was restored on the Android dashboard.
-
-It provides a place to display recent smart home device activity.
+The energy values are **simulated**, because the project does not use physical electricity meters.
 
 ---
 
-# 14. Camera Android Screens
+# 16. Dynamic Room Power
 
-Camera monitoring screens were added to the Android application.
+I updated the Room pages so the Power section is no longer always:
 
-### Added components
+```text
+0 W
+```
 
-* Camera Activity
-* Camera layout
-* Camera status UI
-* Camera preview UI
-* Camera information UI
-* Camera control buttons
-* Living Room camera mock image
-* Garage camera mock image
+Instead, power is calculated according to active devices.
 
-The cameras are simulated because this project does not use physical camera hardware.
+For example:
 
----
+```text
+Device OFF
+→ No simulated power
 
-# 15. Firebase Repository Updates
+Device ON
+→ Simulated power added
+```
 
-The Firebase Repository was updated to support:
-
-* Reading device information
-* Listening to devices in real time
-* Updating device states
-* Listening to all devices on a floor
-* Reading safety configuration
-* Writing iron safety configuration
-* Reading scheduling configuration
-* Writing scheduling configuration
-
-This allows Android and the Hardware Simulator to communicate through Firebase.
+This demonstrates how a real smart-home system could display energy consumption.
 
 ---
 
-# 16. Android Scheduling Integration
+# 17. Android Camera Functionality
 
-The Android scheduling functionality was updated so schedule settings can be stored in Firebase.
+I also contributed to the Android camera interface.
 
-The application can save:
+I created:
+
+```text
+CameraActivity.kt
+activity_camera.xml
+```
+
+and camera-related drawable resources.
+
+I added mock images for:
+
+```text
+Living Room Camera
+Garage Camera
+```
+
+This provides a camera-monitoring interface for the smart-home application.
+
+---
+
+# 18. Scheduling Integration with Android
+
+I also updated the Android scheduling functionality.
+
+Previously, scheduling settings were mainly stored locally.
+
+I changed the implementation so scheduling configuration can be stored in Firebase.
+
+For example:
 
 ```text
 scheduleEnabled
@@ -403,25 +549,129 @@ scheduleOnTime
 scheduleOffTime
 ```
 
-The Hardware Simulator can then read these settings and execute the schedule.
+For the Iron:
+
+```text
+safetyEnabled
+maxOnDuration
+```
+
+Therefore:
+
+```text
+Android App
+     ↓
+Save Schedule
+     ↓
+Firebase
+     ↓
+Hardware Simulator
+     ↓
+Execute Schedule
+```
+
+This makes the Android application and simulator work together rather than having separate local configurations.
 
 ---
 
-# 17. Firebase Cloud Functions
+# 19. GitHub Contribution
 
-Firebase Cloud Functions were initialized for the project to support server-side automation.
+I worked using separate Git branches.
 
-The purpose of the Cloud Functions component is to allow safety and automation rules to run independently from the Android application.
-
-The project was configured using:
+My main branches were:
 
 ```text
-Firebase CLI
-Firebase Functions
-JavaScript
+safiya-simulator
+safiya-App-update
 ```
 
-The Cloud Functions code was also checked using ESLint before deployment.
+### `safiya-simulator`
+
+Used mainly for:
+
+* Hardware Simulator
+* Firebase Web integration
+* Device control
+* Safety automation
+* Scheduling
+* Simulator documentation
+
+### `safiya-App-update`
+
+Used for:
+
+* Dashboard updates
+* Floor updates
+* Camera functionality
+* Reports
+* Dynamic power
+* Firebase Repository updates
+* Android scheduling updates
+
+I also resolved Git synchronization problems when the remote branch contained changes that were not present locally.
+
+---
+
+# 20. Testing
+
+I tested:
+
+* Firebase connection
+* Device ON/OFF controls
+* Firestore updates
+* Real-time synchronization
+* Multi-switch panel
+* Camera simulation
+* Camera status
+* Dashboard active-device counts
+* Ground Floor dynamic values
+* First Floor dynamic values
+* Room power calculations
+* Reports
+* Recent Activity
+* Iron safety logic
+* Light scheduling logic
+* Firebase scheduling configuration
+* Cloud Function linting
+* Android compilation
+
+Example simulator output:
+
+```text
+Firebase Connected Successfully
+Smart Home Simulator Started
+
+livingRoomLight changed to ON
+livingRoomLight changed to OFF
+tvOutlet changed to ON
+tvOutlet changed to OFF
+kitchenLight changed to ON
+kitchenLight changed to OFF
+kitchenIron changed to ON
+kitchenIron changed to OFF
+garageLight changed to ON
+garageLight changed to OFF
+masterBedroomLight changed to ON
+masterBedroomLight changed to OFF
+bedroomLight changed to ON
+bedroomLight changed to OFF
+bathroomLight changed to ON
+bathroomLight changed to OFF
+```
+
+The Android application was successfully compiled after the latest updates.
+
+---
+
+# 21. My Overall Role
+
+My main responsibility was the **Hardware Simulator and Firebase-based automation**.
+
+I developed the web-based Smart Home Simulator, connected it to Firebase Firestore, implemented device controls, camera simulation, multi-switch controls, Iron safety automation, and light scheduling.
+
+I also contributed to the Android application by implementing dynamic Dashboard and floor information, camera functionality, Reports, dynamic power calculations, Recent Activity, and Firebase-based scheduling configuration.
+
+I also prepared and tested the Firebase Cloud Function for Iron safety automation and maintained the related GitHub branches and documentation.
 
 ---
 
@@ -484,104 +734,26 @@ app/
 
 ---
 
-# Smart Home Data Flow
-
-The overall system works using Firebase as the communication layer:
+# Overall System Data Flow
 
 ```text
-             Android Application
-                    │
-                    │
-                    ▼
-             Firebase Firestore
-                    │
-                    │
-                    ▼
-          Hardware Simulator
+                 Android Application
+                         │
+                         │
+                         ▼
+                  Firebase Firestore
+                         │
+                         │
+                         ▼
+                 Hardware Simulator
+                         │
+             ┌───────────┴───────────┐
+             │                       │
+             ▼                       ▼
+       Iron Safety              Light Scheduling
+        Automation                Automation
 ```
 
-For automation:
+The Android application and Hardware Simulator use Firebase Firestore as the common communication layer.
 
-```text
-Firebase Device Data
-        │
-        ▼
-Hardware Simulator
-        │
-        ├── Iron Safety Timer
-        │
-        └── Light Scheduling
-```
-
----
-
-# Testing Performed
-
-The following functionality was tested:
-
-* Firebase connection
-* Device ON/OFF control
-* Real-time Firestore updates
-* Living Room Light
-* TV Power Outlet
-* Kitchen Light
-* Kitchen Iron
-* Garage Light
-* Master Bedroom Light
-* Multi-Switch Panel
-* Bedroom Light
-* Bathroom Light
-* Camera simulation
-* Dynamic active-device counts
-* Dynamic room information
-* Dynamic power calculation
-* Reports screen
-* Firebase scheduling configuration
-* Iron safety configuration
-* Android-to-Firebase communication
-* Firebase-to-Simulator communication
-
-Example simulator console output:
-
-```text
-Firebase Connected Successfully
-Smart Home Simulator Started
-
-livingRoomLight changed to ON
-livingRoomLight changed to OFF
-tvOutlet changed to ON
-tvOutlet changed to OFF
-kitchenLight changed to ON
-kitchenLight changed to OFF
-kitchenIron changed to ON
-kitchenIron changed to OFF
-garageLight changed to ON
-garageLight changed to OFF
-masterBedroomLight changed to ON
-masterBedroomLight changed to OFF
-bedroomLight changed to ON
-bedroomLight changed to OFF
-bathroomLight changed to ON
-bathroomLight changed to OFF
-```
-
----
-
-# GitHub Contribution
-
-All simulator and related Android changes were developed on the personal feature branches:
-
-```text
-safiya-simulator
-safiya-App-update
-```
-
-Changes were committed and pushed to the team repository for integration with the main project.
-
----
-
-# Conclusion
-
-The Hardware Simulator provides a cloud-connected simulation of the Smart Home system. It allows the Android application and simulated hardware to communicate through Firebase Firestore.
-
-The contribution includes device control, real-time synchronization, camera simulation, multi-switch control, iron safety automation, light scheduling, dynamic device monitoring, reports, room power calculation, and supporting Android/Firebase integration.
+This provides a connected smart-home system with real-time monitoring, device control, safety automation, scheduling, camera simulation, reporting, and dynamic device information.
