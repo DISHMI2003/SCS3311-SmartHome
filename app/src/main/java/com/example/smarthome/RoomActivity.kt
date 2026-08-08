@@ -318,6 +318,9 @@ class RoomActivity : AppCompatActivity() {
             ScheduleActivity.EXTRA_SCHEDULE_MODE,
             ScheduleActivity.MODE_LIGHT_SCHEDULE
         )
+        
+        intent.putExtra(ScheduleActivity.EXTRA_FLOOR_ID, floorId)
+        intent.putExtra(ScheduleActivity.EXTRA_ROOM_ID, roomId)
 
         startActivity(intent)
     }
@@ -347,6 +350,9 @@ class RoomActivity : AppCompatActivity() {
             ScheduleActivity.EXTRA_SCHEDULE_MODE,
             ScheduleActivity.MODE_IRON_DURATION
         )
+
+        intent.putExtra(ScheduleActivity.EXTRA_FLOOR_ID, floorId)
+        intent.putExtra(ScheduleActivity.EXTRA_ROOM_ID, roomId)
 
         startActivity(intent)
     }

@@ -22,6 +22,8 @@ class ScheduleActivity : AppCompatActivity() {
         const val EXTRA_DEVICE_NAME = "deviceName"
         const val EXTRA_DEVICE_TYPE = "deviceType"
         const val EXTRA_SCHEDULE_MODE = "scheduleMode"
+        const val EXTRA_FLOOR_ID = "floorId"
+        const val EXTRA_ROOM_ID = "roomId"
 
         const val MODE_LIGHT_SCHEDULE = "lightSchedule"
         const val MODE_IRON_DURATION = "ironDuration"
@@ -59,6 +61,8 @@ class ScheduleActivity : AppCompatActivity() {
     private var deviceName: String = ""
     private var deviceType: String = ""
     private var scheduleMode: String = ""
+    private var floorId: String = ""
+    private var roomId: String = ""
 
     private var selectedOnHour = 18
     private var selectedOnMinute = 0
@@ -66,13 +70,8 @@ class ScheduleActivity : AppCompatActivity() {
     private var selectedOffMinute = 0
 
     private var ironCountDownTimer: CountDownTimer? = null
-
-    private val preferences by lazy {
-        getSharedPreferences(
-            "smart_home_schedule_preferences",
-            MODE_PRIVATE
-        )
-    }
+    
+    private val repository = com.example.smarthome.repository.FirebaseRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,6 +98,9 @@ class ScheduleActivity : AppCompatActivity() {
 
         scheduleMode = intent.getStringExtra(EXTRA_SCHEDULE_MODE)
             ?: MODE_LIGHT_SCHEDULE
+            
+        floorId = intent.getStringExtra(EXTRA_FLOOR_ID).orEmpty()
+        roomId = intent.getStringExtra(EXTRA_ROOM_ID).orEmpty()
     }
 
     private fun initializeViews() {
@@ -236,45 +238,47 @@ class ScheduleActivity : AppCompatActivity() {
     // ----------------------------------------------------------------
 
     private fun loadLightSchedule() {
-        val enabled = preferences.getBoolean(
-            "${deviceId}_schedule_enabled",
-            false
+        if (floorId.isEmpty() || roomId.isEmpty()) return
+        
+        repository.getDevice(floorId, roomId, deviceId,
+            onSuccess = { device ->
+                // Simulate schedule data parsing from device document if it existed
+                // Since `Device` model doesn't currently hold onTime/offTime, we load it manually via raw db call or mock it if not present.
+                // For a proper implementation we would update `Device` model, but for now we query raw Document reference to get schedule fields.
+                com.example.smarthome.firebase.FirebaseManager.db.collection("houses")
+                    .document("house1")
+                    .collection("floors")
+                    .document(floorId)
+                    .collection("rooms")
+                    .document(roomId)
+                    .collection("devices")
+                    .document(deviceId)
+                    .get()
+                    .addOnSuccessListener { doc ->
+                        val enabled = doc.getBoolean("scheduleEnabled") ?: false
+                        
+                        val onTimeStr = doc.getString("scheduleOnTime") ?: "18:00"
+                        val offTimeStr = doc.getString("scheduleOffTime") ?: "22:00"
+                        
+                        selectedOnHour = onTimeStr.substringBefore(":").toIntOrNull() ?: 18
+                        selectedOnMinute = onTimeStr.substringAfter(":").toIntOrNull() ?: 0
+                        
+                        selectedOffHour = offTimeStr.substringBefore(":").toIntOrNull() ?: 22
+                        selectedOffMinute = offTimeStr.substringAfter(":").toIntOrNull() ?: 0
+
+                        switchScheduleEnabled.isChecked = enabled
+
+                        tvOnTime.text = formatTime(selectedOnHour, selectedOnMinute)
+                        tvOffTime.text = formatTime(selectedOffHour, selectedOffMinute)
+
+                        updateLightScheduleStatus(enabled)
+                        updateLightScheduleControls(enabled)
+                    }
+            },
+            onError = {
+                Toast.makeText(this, "Failed to load device schedule", Toast.LENGTH_SHORT).show()
+            }
         )
-
-        selectedOnHour = preferences.getInt(
-            "${deviceId}_on_hour",
-            18
-        )
-
-        selectedOnMinute = preferences.getInt(
-            "${deviceId}_on_minute",
-            0
-        )
-
-        selectedOffHour = preferences.getInt(
-            "${deviceId}_off_hour",
-            22
-        )
-
-        selectedOffMinute = preferences.getInt(
-            "${deviceId}_off_minute",
-            0
-        )
-
-        switchScheduleEnabled.isChecked = enabled
-
-        tvOnTime.text = formatTime(
-            selectedOnHour,
-            selectedOnMinute
-        )
-
-        tvOffTime.text = formatTime(
-            selectedOffHour,
-            selectedOffMinute
-        )
-
-        updateLightScheduleStatus(enabled)
-        updateLightScheduleControls(enabled)
     }
 
     private fun showOnTimePicker() {
@@ -332,28 +336,16 @@ class ScheduleActivity : AppCompatActivity() {
             return
         }
 
-        preferences.edit()
-            .putBoolean(
-                "${deviceId}_schedule_enabled",
-                enabled
-            )
-            .putInt(
-                "${deviceId}_on_hour",
-                selectedOnHour
-            )
-            .putInt(
-                "${deviceId}_on_minute",
-                selectedOnMinute
-            )
-            .putInt(
-                "${deviceId}_off_hour",
-                selectedOffHour
-            )
-            .putInt(
-                "${deviceId}_off_minute",
-                selectedOffMinute
-            )
-            .apply()
+        val onTimeStr = String.format(Locale.getDefault(), "%02d:%02d", selectedOnHour, selectedOnMinute)
+        val offTimeStr = String.format(Locale.getDefault(), "%02d:%02d", selectedOffHour, selectedOffMinute)
+        
+        val properties = mapOf(
+            "scheduleEnabled" to enabled,
+            "scheduleOnTime" to onTimeStr,
+            "scheduleOffTime" to offTimeStr
+        )
+        
+        repository.updateDeviceProperties(floorId, roomId, deviceId, properties)
 
         val message = if (enabled) {
             "$deviceName schedule saved"
@@ -369,13 +361,12 @@ class ScheduleActivity : AppCompatActivity() {
     }
 
     private fun clearLightSchedule() {
-        preferences.edit()
-            .remove("${deviceId}_schedule_enabled")
-            .remove("${deviceId}_on_hour")
-            .remove("${deviceId}_on_minute")
-            .remove("${deviceId}_off_hour")
-            .remove("${deviceId}_off_minute")
-            .apply()
+        val properties = mapOf(
+            "scheduleEnabled" to false,
+            "scheduleOnTime" to "18:00",
+            "scheduleOffTime" to "22:00"
+        )
+        repository.updateDeviceProperties(floorId, roomId, deviceId, properties)
 
         selectedOnHour = 18
         selectedOnMinute = 0
@@ -433,21 +424,27 @@ class ScheduleActivity : AppCompatActivity() {
     // ----------------------------------------------------------------
 
     private fun loadIronSettings() {
-        val enabled = preferences.getBoolean(
-            "${deviceId}_iron_safety_enabled",
-            true
-        )
+        if (floorId.isEmpty() || roomId.isEmpty()) return
+        
+        com.example.smarthome.firebase.FirebaseManager.db.collection("houses")
+            .document("house1")
+            .collection("floors")
+            .document(floorId)
+            .collection("rooms")
+            .document(roomId)
+            .collection("devices")
+            .document(deviceId)
+            .get()
+            .addOnSuccessListener { doc ->
+                val enabled = doc.getBoolean("safetyEnabled") ?: true
+                val maximumMinutes = doc.getLong("maxOnDuration")?.toInt() ?: 1
 
-        val maximumMinutes = preferences.getInt(
-            "${deviceId}_maximum_on_minutes",
-            1
-        )
+                switchIronSafetyEnabled.isChecked = enabled
+                etMaximumMinutes.setText(maximumMinutes.toString())
 
-        switchIronSafetyEnabled.isChecked = enabled
-        etMaximumMinutes.setText(maximumMinutes.toString())
-
-        updateIronSafetyStatus(enabled)
-        updateIronControls(enabled)
+                updateIronSafetyStatus(enabled)
+                updateIronControls(enabled)
+            }
     }
 
     private fun saveIronSafetyDuration() {
@@ -482,16 +479,11 @@ class ScheduleActivity : AppCompatActivity() {
             return
         }
 
-        preferences.edit()
-            .putBoolean(
-                "${deviceId}_iron_safety_enabled",
-                switchIronSafetyEnabled.isChecked
-            )
-            .putInt(
-                "${deviceId}_maximum_on_minutes",
-                minutes
-            )
-            .apply()
+        val properties = mapOf(
+            "safetyEnabled" to switchIronSafetyEnabled.isChecked,
+            "maxOnDuration" to minutes
+        )
+        repository.updateDeviceProperties(floorId, roomId, deviceId, properties)
 
         Toast.makeText(
             this,
@@ -567,14 +559,7 @@ class ScheduleActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
 
-                /*
-                 * Later update Firebase:
-                 *
-                 * FirebaseFirestore.getInstance()
-                 *     .collection("devices")
-                 *     .document(deviceId)
-                 *     .update("status", "OFF")
-                 */
+                repository.updateDeviceStatus(floorId, roomId, deviceId, "OFF")
             }
         }.start()
     }
